@@ -1,0 +1,75 @@
+from enum import IntEnum, auto
+
+# Размеры памяти
+DATA_MEMORY_SIZE = 4096
+INSTRUCTION_MEMORY_SIZE = 4096
+VECTOR_SIZE = 4  # Количество элементов в векторном регистре
+
+# Константы для Memory-mapped I/O
+MMIO_INPUT = 0xFF00
+MMIO_OUTPUT = 0xFF01
+
+
+class OpCode(IntEnum):
+    # Управление данными (CISC: могут работать и с регистрами, и с памятью)
+    MOV = 0x01  # MOV DST, SRC
+    LOAD = 0x02  # LOAD REG, [ADDR]
+    STORE = 0x03  # STORE [ADDR], REG
+    PUSH = 0x04  # PUSH SRC
+    POP = 0x05  # POP DST
+
+    # Арифметика (Скалярная)
+    ADD = 0x10
+    SUB = 0x11
+    MUL = 0x12
+    DIV = 0x13
+    CMP = 0x14
+
+    # Векторные операции (Ваш вариант: Vector)
+    VLOAD = 0x20  # Загрузить вектор из памяти в V-регистр
+    VSTORE = 0x21  # Сохранить V-регистр в память
+    VADD = 0x22  # Поэлементное сложение векторов
+    VSUB = 0x23
+    VMUL = 0x24
+
+    # Управление потоком (CISC: переходы)
+    JMP = 0x30
+    JZ = 0x31  # Jump if Zero
+    JNZ = 0x32  # Jump if Not Zero
+    CALL = 0x33  # Вызов функции (сохраняет PC и FP на стек)
+    RET = 0x34  # Возврат из функции
+    JL = 0x35  # Jump if less (результат CMP < 0)
+
+    # Прерывания (Ваш вариант: Trap)
+    INT = 0x40  # Вызов программного прерывания
+    IRET = 0x41  # Возврат из обработчика прерывания
+
+    HALT = 0xFF
+
+
+class Register(IntEnum):
+    R0 = 0
+    R1 = 1
+    R2 = 2
+    R3 = 3
+    R4 = 4
+    R5 = 5
+    R6 = 6
+    R7 = 7
+    # Векторные регистры
+    V0 = 8
+    V1 = 9
+    V2 = 10
+    V3 = 11
+    # Специальные
+    PC = 12
+    SP = 13  # Stack Pointer
+    FP = 14  # Frame Pointer (необходим для Lisp-рекурсии)
+    SR = 15  # Status Register (флаги Z, N, V, C)
+
+
+class AddressingMode(IntEnum):
+    REGISTER = 0x01  # Операнд в регистре
+    IMMEDIATE = 0x02  # Операнд — число в теле инструкции
+    DIRECT = 0x03  # Операнд — адрес памяти
+    INDIRECT = 0x04  # Операнд — адрес, хранящийся в регистре [R0]
