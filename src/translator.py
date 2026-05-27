@@ -379,7 +379,7 @@ class Translator:
 
             binary += struct.pack('<BBBB', int(instr.opcode), int(instr.mode), int(instr.reg_d), int(instr.reg_s))
             if payload_val is not None:
-                binary += struct.pack('<i', payload_val)
+                binary += struct.pack('<I', payload_val)
         return binary
 
 
@@ -408,7 +408,7 @@ def main():
     # Упаковываем только реально занятую часть памяти данных
     data_bytes = b""
     for i in range(t.data_ptr):
-        data_bytes += struct.pack('<i', t.data_memory[i])
+        data_bytes += struct.pack('<I', t.data_memory[i])
 
     # Формируем заголовок: [Размер кода (4B)] [Размер данных (4B)]
     header = struct.pack('<II', len(binary_code), len(data_bytes))
