@@ -7,6 +7,7 @@
 import re
 import struct
 import sys
+from collections.abc import Callable
 from typing import Any
 
 from src.isa import DATA_MEMORY_SIZE, AddressingMode, OpCode, Register
@@ -188,17 +189,7 @@ class Translator:
             return
 
         if isinstance(expr, str):
-            if expr in local_vars:
-                arg_idx = local_vars[expr]
-                offset = 8 + arg_idx * 4
-                self.add_instruction(OpCode.LOAD, AddressingMode.INDIRECT, Register.R0, Register.FP, offset)
-            elif expr in self.symbol_table:
-                addr = self.symbol_table[expr]
-                self.add_instruction(OpCode.LOAD, AddressingMode.DIRECT, Register.R0, 0, addr)
-            else:
-                # если это не переменная, значит это строковый литерал
-                addr = self.allocate_string(expr)
-                self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, addr)
+            self._translate_variable(expr, local_vars)
             return
 
         if not isinstance(expr, list) or len(expr) == 0:
@@ -206,175 +197,286 @@ class Translator:
 
         op = expr[0]
 
-        # Переменные
-        if op == "setq":
-            var_name, val = expr[1], expr[2]
-            self.translate_expression(val, local_vars)
-            if var_name not in self.symbol_table:
-                self.symbol_table[var_name] = self.data_ptr
-                self.data_ptr += 1
-            self.add_instruction(OpCode.STORE, AddressingMode.DIRECT, 0, Register.R0, self.symbol_table[var_name])
+        # Диспетчеризация через словарь методов
+        handlers: dict[str, Callable[[Any, Any], None]] = {
+            "setq": self._translate_setq,
+            "+": self._translate_arithmetic,
+            "-": self._translate_arithmetic,
+            "*": self._translate_arithmetic,
+            "/": self._translate_arithmetic,
+            "=": self._translate_comparison,
+            "<": self._translate_comparison,
+            "if": self._translate_if,
+            "while": self._translate_while,
+            "defun": self._translate_defun,
+            "print": self._translate_print,
+            "vload": self._translate_vload,
+            "vstore": self._translate_vstore,
+            "vadd": self._translate_vadd,
+            "begin": self._translate_begin,
+            "progn": self._translate_begin,
+            "load": self._translate_load,
+            "store": self._translate_store,
+            "print-str": self._translate_print_str,
+        }
 
-        # Арифметика (поддержка деления и остатка)
-        elif op in ("+", "-", "*", "/"):
-            self.translate_expression(expr[1], local_vars)
-            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
-            self.translate_expression(expr[2], local_vars)
-            self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R1, 0)
-
-            opcode_map = {"+": OpCode.ADD, "-": OpCode.SUB, "*": OpCode.MUL, "/": OpCode.DIV}
-            self.add_instruction(opcode_map[op], AddressingMode.REGISTER, Register.R0, Register.R1)
-
-        # Сравнения
-        elif op in ("=", "<"):
-            self.translate_expression(expr[1], local_vars)
-            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
-            self.translate_expression(expr[2], local_vars)
-            self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R1, 0)
-
-            self.add_instruction(OpCode.CMP, AddressingMode.REGISTER, Register.R1, Register.R0)
-
-            true_lbl = self.get_new_label()
-            end_lbl = self.get_new_label()
-
-            if op == "=":
-                self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, true_lbl)
-            else:
-                self.add_instruction(OpCode.JL, AddressingMode.IMMEDIATE, 0, 0, true_lbl)
-
-            self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
-            self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
-            self.add_label(true_lbl)
-            self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, 1)
-            self.add_label(end_lbl)
-
-        # Условный оператор (if)
-        elif op == "if":
-            cond, then_branch, else_branch = expr[1], expr[2], expr[3]
-            self.translate_expression(cond, local_vars)
-            self.add_instruction(OpCode.CMP, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
-
-            else_lbl = self.get_new_label()
-            end_lbl = self.get_new_label()
-
-            self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, else_lbl)
-            self.translate_expression(then_branch, local_vars)
-            self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
-
-            self.add_label(else_lbl)
-            self.translate_expression(else_branch, local_vars)
-            self.add_label(end_lbl)
-
-        # Цикл while: (while cond body)
-        elif op == "while":
-            cond = expr[1]
-            bodies = expr[2:]
-            start_lbl = self.get_new_label()
-            end_lbl = self.get_new_label()
-
-            self.add_label(start_lbl)
-            self.translate_expression(cond, local_vars)
-            self.add_instruction(OpCode.CMP, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
-            self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
-
-            # Транслируем каждое выражение в теле цикла по очереди
-            for body in bodies:
-                self.translate_expression(body, local_vars)
-
-            self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, start_lbl)
-            self.add_label(end_lbl)
-
-        # Определение функций
-        elif op == "defun":
-            func_name, args = expr[1], expr[2]
-            bodies = expr[3:]  # Поддерживаем множественные выражения в теле функции
-
-            skip_lbl = self.get_new_label()
-            self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, skip_lbl)
-
-            self.add_label(func_name)
-            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.FP)
-            self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.FP, Register.SP)
-
-            func_locals = {arg_name: i for i, arg_name in enumerate(args)}
-            for body in bodies:
-                self.translate_expression(body, func_locals)
-
-            self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.SP, Register.FP)
-            self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.FP, 0)
-            self.add_instruction(OpCode.RET, AddressingMode.REGISTER, 0, 0)
-
-            self.add_label(skip_lbl)
-
-        # Чтение по динамическому адресу: (load addr)
-        elif op == "load":
-            self.translate_expression(expr[1], local_vars)  # Оцениваем адрес в R0
-            self.add_instruction(OpCode.LOAD, AddressingMode.INDIRECT, Register.R0, Register.R0, 0)
-
-        # Запись по динамическому адресу: (store addr val)
-        elif op == "store":
-            self.translate_expression(expr[2], local_vars)  # Оцениваем значение в R0
-            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)  # Сохраняем значение на стек
-            self.translate_expression(expr[1], local_vars)  # Оцениваем адрес в R0
-            self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.R1, Register.R0)  # Адрес переносим в R1
-            self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R0, 0)  # Возвращаем значение в R0
-            # Записываем значение R0 по адресу из R1
-            self.add_instruction(OpCode.STORE, AddressingMode.INDIRECT, Register.R1, Register.R0, 0)
-
-        # Печать строки из памяти: (print-str addr_or_string)
-        elif op == "print-str":
-            self.translate_expression(expr[1], local_vars)
-            self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2)
-
-        # Вывод
-        elif op == "print":
-            arg = expr[1]
-            if isinstance(arg, str) and arg not in local_vars and arg not in self.symbol_table:
-                # Печать статистической строки
-                self.translate_expression(arg, local_vars)
-                self.add_instruction(
-                    OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2
-                )  # INT 2 - системный вызов печати C-строки
-            else:
-                # Печать числа
-                self.translate_expression(arg, local_vars)
-                self.add_instruction(
-                    OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 1
-                )  # INT 1 - системный вызов печати числа
-
-        # Блок последовательного выполнения выражений: (begin expr1 expr2 ...)
-        elif op in ("begin", "progn"):
-            for sub_expr in expr[1:]:
-                self.translate_expression(sub_expr, local_vars)
-
-        # Векторные операции
-        elif op == "vload":
-            # (vload V0 addr) -> VLOAD V0, [addr]
-            reg_d = getattr(Register, expr[1])
-            addr = expr[2]
-            self.add_instruction(OpCode.VLOAD, AddressingMode.DIRECT, reg_d, 0, addr)
-
-        elif op == "vstore":
-            # (vstore addr V0) -> VSTORE [addr], V0
-            addr = expr[1]
-            reg_s = getattr(Register, expr[2])
-            self.add_instruction(OpCode.VSTORE, AddressingMode.DIRECT, 0, reg_s, addr)
-
-        elif op == "vadd":
-            reg_d = getattr(Register, expr[1])
-            reg_s = getattr(Register, expr[2])
-            self.add_instruction(OpCode.VADD, AddressingMode.REGISTER, reg_d, reg_s)
-
-        # Вызов пользовательских функций
+        if op in handlers:
+            handlers[op](expr, local_vars)
         else:
-            args = expr[1:]
-            for arg in reversed(args):
-                self.translate_expression(arg, local_vars)
-                self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
+            self._translate_call(expr, local_vars)
 
-            self.add_instruction(OpCode.CALL, AddressingMode.IMMEDIATE, 0, 0, op)
-            if args:
-                self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.SP, 0, len(args) * 4)
+    def _translate_variable(self, expr: str, local_vars: dict[str, int]) -> None:
+        """Транслирует обращение к переменной.
+
+        Определяет область видимости переменной (локальная во фрейме FP или глобальная)
+        и генерирует соответствующую команду загрузки LOAD. Если переменная не найдена,
+        трактует её как статический строковый литерал."""
+
+        if expr in local_vars:
+            arg_idx = local_vars[expr]
+            offset = 8 + arg_idx * 4
+            self.add_instruction(OpCode.LOAD, AddressingMode.INDIRECT, Register.R0, Register.FP, offset)
+        elif expr in self.symbol_table:
+            addr = self.symbol_table[expr]
+            self.add_instruction(OpCode.LOAD, AddressingMode.DIRECT, Register.R0, 0, addr)
+        else:
+            # если это не переменная, значит это строковый литерал
+            addr = self.allocate_string(expr)
+            self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, addr)
+
+    def _translate_setq(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует операцию присваивания значения переменной (setq var val).
+
+        Вычисляет выражение val в R0, регистрирует переменную в глобальной таблице
+        символов (если её там не было) и сохраняет значение в память по DIRECT-адресу.
+        """
+
+        var_name, val = expr[1], expr[2]
+        self.translate_expression(val, local_vars)
+        if var_name not in self.symbol_table:
+            self.symbol_table[var_name] = self.data_ptr
+            self.data_ptr += 1
+        self.add_instruction(OpCode.STORE, AddressingMode.DIRECT, 0, Register.R0, self.symbol_table[var_name])
+
+    def _translate_binary_operands(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Вычисляет два операнда бинарной операции и подготавливает регистры.
+
+        Оценивает левый операнд (результат в R0), временно сохраняет его на стек,
+        затем оценивает правый операнд (результат в R0) и извлекает левый обратно в R1.
+        """
+
+        self.translate_expression(expr[1], local_vars)
+        self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
+        self.translate_expression(expr[2], local_vars)
+        self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R1, 0)
+
+    def _translate_arithmetic(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует базовые математические операции (+, -, *, /).
+
+        Использует _translate_binary_operands и выполняет соответствующее вычисление в ALU.
+        """
+
+        op = expr[0]
+        # Вычисляем операнды
+        self._translate_binary_operands(expr, local_vars)
+        opcode_map = {"+": OpCode.ADD, "-": OpCode.SUB, "*": OpCode.MUL, "/": OpCode.DIV}
+        self.add_instruction(opcode_map[op], AddressingMode.REGISTER, Register.R0, Register.R1)
+
+    def _translate_comparison(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует операции сравнения (=, <).
+
+        Сравнивает левый и правый операнды с помощью команды CMP, выполняет
+        условный переход (JZ или JL) и возвращает логическое значение (1 или 0) в R0.
+        """
+
+        op = expr[0]
+        # Вычисляем операнды
+        self._translate_binary_operands(expr, local_vars)
+        self.add_instruction(OpCode.CMP, AddressingMode.REGISTER, Register.R1, Register.R0)
+
+        true_lbl = self.get_new_label()
+        end_lbl = self.get_new_label()
+
+        if op == "=":
+            self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, true_lbl)
+        else:
+            self.add_instruction(OpCode.JL, AddressingMode.IMMEDIATE, 0, 0, true_lbl)
+
+        self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
+        self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
+        self.add_label(true_lbl)
+        self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, 1)
+        self.add_label(end_lbl)
+
+    def _translate_if(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует условный оператор (if cond then else).
+
+        Вычисляет условие cond, сравнивает результат с нулем и генерирует
+        условный переход JZ на ветку else в случае ложного условия.
+        """
+
+        cond, then_branch, else_branch = expr[1], expr[2], expr[3]
+        self.translate_expression(cond, local_vars)
+        self.add_instruction(OpCode.CMP, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
+
+        else_lbl = self.get_new_label()
+        end_lbl = self.get_new_label()
+
+        self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, else_lbl)
+        self.translate_expression(then_branch, local_vars)
+        self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
+        self.add_label(else_lbl)
+        self.translate_expression(else_branch, local_vars)
+        self.add_label(end_lbl)
+
+    def _translate_while(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует цикл (while cond body1 body2 ...).
+
+        Создает метки начала и конца цикла, на каждом шаге вычисляет cond
+        и осуществляет переход к концу при ложном условии. Последовательно
+        транслирует все выражения внутри тела цикла.
+        """
+
+        cond = expr[1]
+        bodies = expr[2:]
+        start_lbl = self.get_new_label()
+        end_lbl = self.get_new_label()
+
+        self.add_label(start_lbl)
+        self.translate_expression(cond, local_vars)
+        self.add_instruction(OpCode.CMP, AddressingMode.IMMEDIATE, Register.R0, 0, 0)
+        self.add_instruction(OpCode.JZ, AddressingMode.IMMEDIATE, 0, 0, end_lbl)
+
+        for body in bodies:
+            self.translate_expression(body, local_vars)
+
+        self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, start_lbl)
+        self.add_label(end_lbl)
+
+    def _translate_defun(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует объявление функции (defun name (args) body1 body2 ...).
+
+        Генерирует обход тела функции JMP при линейном выполнении кода,
+        создает пролог фрейма стека (сохранение FP, MOV FP, SP), транслирует
+        тело с локальным словарем аргументов и генерирует эпилог с возвратом RET.
+        """
+
+        func_name, args = expr[1], expr[2]
+        bodies = expr[3:]
+
+        skip_lbl = self.get_new_label()
+        self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, skip_lbl)
+
+        self.add_label(func_name)
+        self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.FP)
+        self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.FP, Register.SP)
+
+        func_locals = {arg_name: i for i, arg_name in enumerate(args)}
+        for body in bodies:
+            self.translate_expression(body, func_locals)
+
+        self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.SP, Register.FP)
+        self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.FP, 0)
+        self.add_instruction(OpCode.RET, AddressingMode.REGISTER, 0, 0)
+        self.add_label(skip_lbl)
+
+    def _translate_print(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует системную операцию вывода (print expr).
+
+        Анализирует тип аргумента: если это статический строковый литерал,
+        использует прерывание печати строки (INT 2), иначе - печать числа (INT 1).
+        """
+
+        arg = expr[1]
+        if isinstance(arg, str) and arg not in local_vars and arg not in self.symbol_table:
+            self.translate_expression(arg, local_vars)
+            self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2)
+        else:
+            self.translate_expression(arg, local_vars)
+            self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 1)
+
+    def _translate_vload(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует команду загрузки вектора из памяти (vload V_reg addr).
+
+        Генерирует векторную инструкцию VLOAD для переноса данных из DIRECT-памяти.
+        """
+
+        reg_d = getattr(Register, expr[1])
+        addr = expr[2]
+        self.add_instruction(OpCode.VLOAD, AddressingMode.DIRECT, reg_d, 0, addr)
+
+    def _translate_vstore(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует команду сохранения вектора в память (vstore addr V_reg).
+
+        Генерирует векторную инструкцию VSTORE для сохранения данных из векторного регистра.
+        """
+
+        addr = expr[1]
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VSTORE, AddressingMode.DIRECT, 0, reg_s, addr)
+
+    def _translate_vadd(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует сложение векторных регистров (vadd V_dest V_src).
+
+        Генерирует поэлементную векторную инструкцию VADD.
+        """
+
+        reg_d = getattr(Register, expr[1])
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VADD, AddressingMode.REGISTER, reg_d, reg_s)
+
+    def _translate_begin(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует блок последовательного выполнения выражений (begin/progn ...)."""
+
+        for sub_expr in expr[1:]:
+            self.translate_expression(sub_expr, local_vars)
+
+    def _translate_load(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует примитив чтения по динамическому адресу (load addr_expr).
+
+        Оценивает выражение адреса и выполняет косвенное чтение из памяти через LOAD.
+        """
+
+        self.translate_expression(expr[1], local_vars)
+        self.add_instruction(OpCode.LOAD, AddressingMode.INDIRECT, Register.R0, Register.R0, 0)
+
+    def _translate_store(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует примитив записи по динамическому адресу (store addr_expr val_expr).
+
+        Оценивает значение и адрес, после чего выполняет косвенную запись в память через STORE.
+        """
+
+        self.translate_expression(expr[2], local_vars)
+        self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
+        self.translate_expression(expr[1], local_vars)
+        self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.R1, Register.R0)
+        self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R0, 0)
+        self.add_instruction(OpCode.STORE, AddressingMode.INDIRECT, Register.R1, Register.R0, 0)
+
+    def _translate_print_str(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует явную команду вывода строки по адресу (print-str addr_expr).
+
+        Вычисляет адрес начала строки и инициирует прерывание INT 2.
+        """
+
+        self.translate_expression(expr[1], local_vars)
+        self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2)
+
+    def _translate_call(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует вызов пользовательской функции.
+
+        Вычисляет аргументы в обратном порядке, помещает их на стек через PUSH,
+        вызывает функцию через CALL и выполняет очистку стека аргументов после возврата.
+        """
+
+        op = expr[0]
+        args = expr[1:]
+        for arg in reversed(args):
+            self.translate_expression(arg, local_vars)
+            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
+        self.add_instruction(OpCode.CALL, AddressingMode.IMMEDIATE, 0, 0, op)
+        if args:
+            self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.SP, 0, len(args) * 4)
 
     def compile_to_binary(self) -> bytes:
         """Выполняет второй проход компиляции.

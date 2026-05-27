@@ -7,6 +7,7 @@
 import argparse
 import logging
 import struct
+from collections.abc import Callable
 
 from src.isa import (
     DATA_MEMORY_SIZE,
@@ -164,199 +165,287 @@ class ControlUnit:
             f"TICK: {self.tick_count:4} | PC: {pc:3} | OP: {OpCode(opcode).name} | R0: {self.dp.registers[Register.R0]}"
         )
 
-        if opcode == OpCode.HALT:
-            self._halt = True
-            self.tick()
+        # Таблица диспетчеризации опкодов
+        handlers: dict[OpCode, Callable[[int, int, int, int], None]] = {
+            OpCode.HALT: self._execute_halt,
+            OpCode.MOV: self._execute_mov,
+            OpCode.LOAD: self._execute_load,
+            OpCode.STORE: self._execute_store,
+            OpCode.ADD: self._execute_add,
+            OpCode.SUB: self._execute_sub,
+            OpCode.MUL: self._execute_mul,
+            OpCode.DIV: self._execute_div,
+            OpCode.PUSH: self._execute_push,
+            OpCode.POP: self._execute_pop,
+            OpCode.CMP: self._execute_cmp,
+            OpCode.JMP: self._execute_jmp,
+            OpCode.JZ: self._execute_jz,
+            OpCode.JL: self._execute_jl,
+            OpCode.CALL: self._execute_call,
+            OpCode.RET: self._execute_ret,
+            OpCode.IRET: self._execute_iret,
+            OpCode.INT: self._execute_int,
+            OpCode.VLOAD: self._execute_vload,
+            OpCode.VSTORE: self._execute_vstore,
+            OpCode.VADD: self._execute_vadd,
+        }
 
-        elif opcode == OpCode.MOV:
-            if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                self.dp.registers[reg_d] = payload
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            else:
-                self.dp.registers[reg_d] = self.dp.registers[reg_s]
-                self.dp.registers[Register.PC] += 4
-            self.tick()
+        if opcode in handlers:
+            handlers[opcode](mode, reg_d, reg_s, pc)
+        else:
+            raise ValueError(f"Unknown OpCode: {opcode}")
 
-        elif opcode == OpCode.LOAD:
-            if mode == AddressingMode.INDIRECT:
-                offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                addr = self.dp.registers[reg_s] + offset
-                self.dp.registers[reg_d] = self.dp.read_data(addr)
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            elif mode == AddressingMode.DIRECT:
-                addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                self.dp.registers[reg_d] = self.dp.read_data(addr)
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            self.tick()
+    def _execute_halt(self, _mode: int, _reg_d: int, _reg_s: int, _pc: int) -> None:
+        """Выполняет остановку симуляции процессора (HALT)."""
 
-        elif opcode == OpCode.STORE:
-            if mode == AddressingMode.DIRECT:
-                addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                self.dp.write_data(addr, self.dp.registers[reg_s])
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            elif mode == AddressingMode.INDIRECT:
-                # Запись по адресу, лежащему в регистре reg_d
-                offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                addr = self.dp.registers[reg_d] + offset
-                self.dp.write_data(addr, self.dp.registers[reg_s])
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            self.tick()
+        self._halt = True
+        self.tick()
 
-        elif opcode == OpCode.ADD:
-            if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                self.dp.registers[reg_d] = (self.dp.registers[reg_d] + payload) & 0xFFFFFFFF  # Переполнение
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            else:
-                self.dp.registers[reg_d] = (
-                    self.dp.registers[reg_d] + self.dp.registers[reg_s]
-                ) & 0xFFFFFFFF  # Переполнение
-                self.dp.registers[Register.PC] += 4
-            self.tick()
+    def _execute_mov(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет операцию MOV.
 
-        elif opcode == OpCode.SUB:
-            self.dp.registers[reg_d] = (
-                self.dp.registers[reg_s] - self.dp.registers[reg_d]
-            ) & 0xFFFFFFFF  # Переполнение
-            self.dp.registers[Register.PC] += 4
-            self.tick()
+        Записывает в целевой регистр непосредственное значение (payload)
+        или копирует значение из другого регистра.
+        """
 
-        elif opcode == OpCode.MUL:
-            self.dp.registers[reg_d] = (
-                self.dp.registers[reg_s] * self.dp.registers[reg_d]
-            ) & 0xFFFFFFFF  # Переполнение
-            self.dp.registers[Register.PC] += 4
-            self.tick()
-
-        elif opcode == OpCode.DIV:
-            self.dp.registers[reg_d] = (
-                self.dp.registers[reg_s] // self.dp.registers[reg_d]
-            ) & 0xFFFFFFFF  # Переполнение
-            self.dp.registers[Register.PC] += 4
-            self.tick()
-
-        elif opcode == OpCode.PUSH:
-            self.dp.push(self.dp.registers[reg_s])
-            self.dp.registers[Register.PC] += 4
-            self.tick()
-
-        elif opcode == OpCode.POP:
-            self.dp.registers[reg_d] = self.dp.pop()
-            self.dp.registers[Register.PC] += 4
-            self.tick()
-
-        elif opcode == OpCode.CMP:
-            payload = self.dp.registers[reg_s]
-            if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-                val = self.dp.registers[reg_d] - payload
-                self.dp.registers[Register.PC] += 8
-                self.tick()
-            else:
-                val = self.dp.registers[reg_d] - payload
-                self.dp.registers[Register.PC] += 4
-
-            # Кодируем флаги в SR: Bit 0 = ZF, Bit 1 = NF
-            zf = 1 if val == 0 else 0
-            # Если reg_d < reg_s, то при беззнаковом вычитании будет перенос/отрицательный результат
-            nf = 1 if (self.dp.registers[reg_d] < payload) else 0
-            self.dp.registers[Register.SR] = (nf << 1) | zf
-            self.tick()
-
-        elif opcode == OpCode.JMP:
-            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            self.dp.registers[Register.PC] = target
-            self.tick(2)
-
-        elif opcode == OpCode.JZ:
-            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            zf = self.dp.registers[Register.SR] & 1
-            if zf == 1:
-                self.dp.registers[Register.PC] = target
-            else:
-                self.dp.registers[Register.PC] += 8
-            self.tick(2)
-
-        elif opcode == OpCode.JL:
-            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            nf = (self.dp.registers[Register.SR] >> 1) & 1
-            if nf == 1:
-                self.dp.registers[Register.PC] = target
-            else:
-                self.dp.registers[Register.PC] += 8
-            self.tick(2)
-
-        elif opcode == OpCode.CALL:
-            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            self.dp.push(pc + 8)
-            self.dp.registers[Register.PC] = target
-            self.tick(2)
-
-        elif opcode == OpCode.RET:
-            self.dp.registers[Register.PC] = self.dp.pop()
-            self.tick(2)
-
-        elif opcode == OpCode.IRET:
-            # Возврат из прерывания: восстанавливаем контекст
-            self.dp.registers[Register.SR] = self.dp.pop()
-            self.dp.registers[Register.PC] = self.dp.pop()
-            self.in_interrupt = False
-            self.tick(2)
-
-        elif opcode == OpCode.INT:
+        if mode == AddressingMode.IMMEDIATE:
             payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            if payload == 1:
-                # Печать числа
-                val = self.dp.registers[Register.R0]
-                self.dp.output_buffer.append(str(val))
-                logging.info(f"SYSTEM PRINT INT: {val}")
-            elif payload == 2:
-                # Печать C-style строки (null-terminated)
-                addr = self.dp.registers[Register.R0]
-                char_code = self.dp.read_data(addr)
-                string_chars: list[str] = []
-                while char_code != 0 and len(string_chars) < 1000:  # Ограничитель безопасности
-                    string_chars.append(chr(char_code))
-                    addr += 1  # Переход на одно слово вперед
-                    char_code = self.dp.read_data(addr)
-                output_str = "".join(string_chars)
-                self.dp.output_buffer.extend(string_chars)
-                logging.info(f"SYSTEM PRINT STRING: {output_str}")
-
+            self.dp.registers[reg_d] = payload
             self.dp.registers[Register.PC] += 8
             self.tick()
-
-        # Векторные операции
-        elif opcode == OpCode.VLOAD:
-            v_reg = reg_d - 8
-            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            for i in range(VECTOR_SIZE):
-                self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i)
-                self.tick()
-            self.dp.registers[Register.PC] += 8
-
-        elif opcode == OpCode.VSTORE:
-            v_reg = reg_s - 8
-            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
-            for i in range(VECTOR_SIZE):
-                self.dp.write_data(addr + i, self.dp.vector_registers[v_reg][i])
-                self.tick()
-            self.dp.registers[Register.PC] += 8
-
-        elif opcode == OpCode.VADD:
-            v_dest = reg_d - 8
-            v_src = reg_s - 8
-            for i in range(VECTOR_SIZE):
-                self.dp.vector_registers[v_dest][i] += self.dp.vector_registers[v_src][i]
-                self.tick()
+        else:
+            self.dp.registers[reg_d] = self.dp.registers[reg_s]
             self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_load(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет операцию загрузки данных из памяти в регистр (LOAD).
+
+        Поддерживает прямую (DIRECT) и косвенную (INDIRECT со смещением) адресации.
+        """
+
+        if mode == AddressingMode.INDIRECT:
+            offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            addr = self.dp.registers[reg_s] + offset
+            self.dp.registers[reg_d] = self.dp.read_data(addr)
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        elif mode == AddressingMode.DIRECT:
+            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            self.dp.registers[reg_d] = self.dp.read_data(addr)
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        self.tick()
+
+    def _execute_store(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет операцию записи данных из регистра в память (STORE).
+
+        Поддерживает прямую (DIRECT) и косвенную (INDIRECT со смещением) адресации.
+        """
+
+        if mode == AddressingMode.DIRECT:
+            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            self.dp.write_data(addr, self.dp.registers[reg_s])
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        elif mode == AddressingMode.INDIRECT:
+            offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            addr = self.dp.registers[reg_d] + offset
+            self.dp.write_data(addr, self.dp.registers[reg_s])
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        self.tick()
+
+    def _execute_add(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет операцию сложения (ADD) в ALU.
+
+        Производит беззнаковое сложение с автоматическим 32-битным переполнением.
+        """
+
+        if mode == AddressingMode.IMMEDIATE:
+            payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            self.dp.registers[reg_d] = (self.dp.registers[reg_d] + payload) & 0xFFFFFFFF
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        else:
+            self.dp.registers[reg_d] = (self.dp.registers[reg_d] + self.dp.registers[reg_s]) & 0xFFFFFFFF
+            self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_sub(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет вычитание в ALU с 32-битным переполнением."""
+
+        self.dp.registers[reg_d] = (self.dp.registers[reg_s] - self.dp.registers[reg_d]) & 0xFFFFFFFF
+        self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_mul(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет умножение в ALU с 32-битным переполнением."""
+
+        self.dp.registers[reg_d] = (self.dp.registers[reg_s] * self.dp.registers[reg_d]) & 0xFFFFFFFF
+        self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_div(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет целочисленное деление в ALU с 32-битным переполнением."""
+
+        self.dp.registers[reg_d] = (self.dp.registers[reg_s] // self.dp.registers[reg_d]) & 0xFFFFFFFF
+        self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_push(self, _mode: int, _reg_d: int, reg_s: int, _pc: int) -> None:
+        """Сохраняет значение регистра на вершину аппаратного стека (PUSH)."""
+
+        self.dp.push(self.dp.registers[reg_s])
+        self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_pop(self, _mode: int, reg_d: int, _reg_s: int, _pc: int) -> None:
+        """Извлекает значение с вершины аппаратного стека в целевой регистр (POP)."""
+
+        self.dp.registers[reg_d] = self.dp.pop()
+        self.dp.registers[Register.PC] += 4
+        self.tick()
+
+    def _execute_cmp(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет сравнение двух значений с помощью вычитания (CMP).
+
+        Обновляет флаги состояния в регистре SR (Bit 0 = ZF, Bit 1 = NF).
+        """
+
+        payload = 0
+        if mode == AddressingMode.IMMEDIATE:
+            payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+            val = self.dp.registers[reg_d] - payload
+            self.dp.registers[Register.PC] += 8
+            self.tick()
+        else:
+            val = self.dp.registers[reg_d] - self.dp.registers[reg_s]
+            self.dp.registers[Register.PC] += 4
+        zf = 1 if val == 0 else 0
+        nf = (
+            1
+            if (self.dp.registers[reg_d] < (payload if mode == AddressingMode.IMMEDIATE else self.dp.registers[reg_s]))
+            else 0
+        )
+        self.dp.registers[Register.SR] = (nf << 1) | zf
+        self.tick()
+
+    def _execute_jmp(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет безусловный переход на указанный адрес (JMP)."""
+
+        target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        self.dp.registers[Register.PC] = target
+        self.tick(2)
+
+    def _execute_jz(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет условный переход, если взведен флаг Zero (JZ)."""
+
+        target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        zf = self.dp.registers[Register.SR] & 1
+        if zf == 1:
+            self.dp.registers[Register.PC] = target
+        else:
+            self.dp.registers[Register.PC] += 8
+        self.tick(2)
+
+    def _execute_jl(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет условный переход, если взведен флаг Negative (JL)."""
+
+        target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        nf = (self.dp.registers[Register.SR] >> 1) & 1
+        if nf == 1:
+            self.dp.registers[Register.PC] = target
+        else:
+            self.dp.registers[Register.PC] += 8
+        self.tick(2)
+
+    def _execute_call(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет вызов подпрограммы (CALL).
+
+        Сохраняет адрес возврата (PC + 8) на стеке и совершает безусловный переход.
+        """
+
+        target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        self.dp.push(pc + 8)
+        self.dp.registers[Register.PC] = target
+        self.tick(2)
+
+    def _execute_ret(self, _mode: int, _reg_d: int, _reg_s: int, _pc: int) -> None:
+        """Выполняет возврат из подпрограммы (RET).
+
+        Извлекает адрес возврата со стека и записывает его в PC.
+        """
+
+        self.dp.registers[Register.PC] = self.dp.pop()
+        self.tick(2)
+
+    def _execute_iret(self, _mode: int, _reg_d: int, _reg_s: int, _pc: int) -> None:
+        """Выполняет возврат из обработчика прерывания (IRET).
+
+        Восстанавливает регистр флагов SR и счетчик команд PC со стека.
+        """
+        self.dp.registers[Register.SR] = self.dp.pop()
+        self.dp.registers[Register.PC] = self.dp.pop()
+        self.in_interrupt = False
+        self.tick(2)
+
+    def _execute_int(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет программное прерывание / системный вызов (INT).
+
+        Поддерживает:
+        - INT 1: Вывод целого числа из R0.
+        - INT 2: Вывод null-terminated C-строки, начинающейся с адреса в R0.
+        """
+
+        payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        if payload == 1:
+            val = self.dp.registers[Register.R0]
+            self.dp.output_buffer.append(str(val))
+            logging.info(f"SYSTEM PRINT INT: {val}")
+        elif payload == 2:
+            addr = self.dp.registers[Register.R0]
+            char_code = self.dp.read_data(addr)
+            string_chars: list[str] = []
+            while char_code != 0 and len(string_chars) < 1000:
+                string_chars.append(chr(char_code))
+                addr += 1
+                char_code = self.dp.read_data(addr)
+            output_str = "".join(string_chars)
+            self.dp.output_buffer.extend(string_chars)
+            logging.info(f"SYSTEM PRINT STRING: {output_str}")
+        self.dp.registers[Register.PC] += 8
+        self.tick()
+
+    def _execute_vload(self, _mode: int, reg_d: int, _reg_s: int, pc: int) -> None:
+        """Выполняет последовательную загрузку значений памяти в векторный регистр V_reg."""
+
+        v_reg = reg_d - 8
+        addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        for i in range(VECTOR_SIZE):
+            self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i)
+            self.tick()
+        self.dp.registers[Register.PC] += 8
+
+    def _execute_vstore(self, _mode: int, _reg_d: int, reg_s: int, pc: int) -> None:
+        """Выполняет последовательное сохранение векторного регистра V_reg в память данных."""
+
+        v_reg = reg_s - 8
+        addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        for i in range(VECTOR_SIZE):
+            self.dp.write_data(addr + i, self.dp.vector_registers[v_reg][i])
+            self.tick()
+        self.dp.registers[Register.PC] += 8
+
+    def _execute_vadd(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет поэлементное векторное сложение двух V-регистров за VECTOR_SIZE тактов."""
+
+        v_dest = reg_d - 8
+        v_src = reg_s - 8
+        for i in range(VECTOR_SIZE):
+            self.dp.vector_registers[v_dest][i] += self.dp.vector_registers[v_src][i]
+            self.tick()
+        self.dp.registers[Register.PC] += 4
 
     def run(self) -> None:
         """Запускает симуляцию выполнения программы до команды HALT или лимита тактов."""
