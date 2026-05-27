@@ -11,7 +11,7 @@ import sys
 from collections.abc import Callable
 from typing import Any
 
-from src.isa import DATA_MEMORY_SIZE, AddressingMode, OpCode, Register
+from src.isa import DATA_MEMORY_SIZE, MMIO_INPUT, MMIO_OUTPUT, AddressingMode, OpCode, Register
 
 
 def to_lisp_string(expr: Any) -> str:
@@ -112,10 +112,7 @@ class Translator:
         self.data_memory: list[int] = [0] * DATA_MEMORY_SIZE
         self.data_ptr: int = 0
 
-        self.symbol_table = {
-            "stdin": 0xFF00,  # MMIO_INPUT
-            "stdout": 0xFF01,  # MMIO_OUTPUT
-        }
+        self.symbol_table = {"stdin": MMIO_INPUT, "stdout": MMIO_OUTPUT}
         self.label_counter: int = 0
 
         self.debug_info: dict[int, str] = {}  # Карта: байтовый адрес -> Lisp-код
