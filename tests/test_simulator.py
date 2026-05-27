@@ -93,3 +93,11 @@ def test_interrupt_integration():
     schedule_data = "30,Y\n60,e\n90,s\n"
 
     run_pipeline(lisp_file="examples/trap_demo.lisp", schedule_content=schedule_data, expected_output="Yes")
+
+
+def test_vector_benchmark_integration():
+    """Интеграционный тест для проверки векторных (SIMD) вычислений."""
+    expected_result = (
+        "VADD: 110 220 330 440  VSUB: 90 180 270 360  VMUL: 1000 4000 9000 16000  VDIV: 10 10 10 10  VCMP: 1 0 1 0"
+    )
+    run_pipeline(lisp_file="examples/vector_benchmark.lisp", expected_output=expected_result)
