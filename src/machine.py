@@ -44,6 +44,7 @@ class DataPath:
         self.input_buffer: list[str] = []  # Буфер для последовательного ввода (--input)
         self.output_buffer: list[str] = []
         self.input_schedule: list[tuple[int, str]] = []  # Список кортежей (tick, value) для TRAP
+        self.has_input: bool = False  # Флаг, указывающий, пришло на нам что-то на input
         self.mmio_input_val: int = 0  # Выделенный регистр-буфер ввода для MMIO портов
 
     def read_data(self, address: int) -> int:
@@ -61,8 +62,8 @@ class DataPath:
             if self.input_buffer:
                 char = self.input_buffer.pop(0)
                 self.mmio_input_val = ord(char) if isinstance(char, str) else char
-            else:
-                self.mmio_input_val = 0  # 0 сигнализирует об EOF
+            elif self.has_input:
+                self.mmio_input_val = 0
 
             char_repr = chr(self.mmio_input_val) if 0 < self.mmio_input_val <= 255 else "EOF"
             logging.info(f"MMIO: Reading from INPUT: {self.mmio_input_val} ('{char_repr}')")
@@ -106,13 +107,14 @@ class ControlUnit:
     Decode (декодирование), Execute (выполнение) и обработку прерываний.
     """
 
-    def __init__(self, data_path: DataPath) -> None:
+    def __init__(self, data_path: DataPath, intr_vector: int = 0) -> None:
         """Инициализирует УУ и связывает его с трактом данных."""
 
         self.dp: DataPath = data_path
         self.tick_count: int = 0
         self._halt: bool = False
         self.in_interrupt: bool = False
+        self.intr_vector = intr_vector
 
     def tick(self, count: int = 1) -> None:
         """Увеличивает счетчик тактов выполнения процессора."""
@@ -127,22 +129,27 @@ class ControlUnit:
         """
 
         if not self.in_interrupt and self.dp.input_schedule:
-            next_intr_tick, value = self.dp.input_schedule[0]
-            if self.tick_count >= next_intr_tick:
-                self.dp.input_schedule.pop(0)
-                logging.info(f"--- TRAP: Interrupt Triggered at tick {self.tick_count}! Input value: {value} ---")
+            if not self.in_interrupt and self.dp.input_schedule:
+                next_intr_tick, value = self.dp.input_schedule[0]
+                if self.tick_count >= next_intr_tick:
+                    self.dp.input_schedule.pop(0)
 
-                self.dp.mmio_input_val = ord(value) if isinstance(value, str) else value
+                    # Проверяем, зарегистрирован ли вообще обработчик прерывания
+                    if self.intr_vector != 0:
+                        logging.info(
+                            f"--- TRAP: Interrupt Triggered at tick {self.tick_count}! Input value: {value} ---"
+                        )
 
-                # Спасаем контекст на стеке
-                self.dp.push(self.dp.registers[Register.PC])
-                self.dp.push(self.dp.registers[Register.SR])
+                        self.dp.mmio_input_val = ord(value) if isinstance(value, str) else value
 
-                # Эмуляция перехода на вектор прерывания.
-                # Пусть обработчик прерывания находится на адресе 4 (первая команда программы после стартового JMP)
-                self.in_interrupt = True
-                self.dp.registers[Register.PC] = 4  # Переход к обработчику
-                self.tick(3)  # Такты на переход и сохранение контекста
+                        # Спасаем контекст на стеке
+                        self.dp.push(self.dp.registers[Register.PC])
+                        self.dp.push(self.dp.registers[Register.SR])
+
+                        # Переходим на вектор прерывания
+                        self.in_interrupt = True
+                        self.dp.registers[Register.PC] = self.intr_vector  # Переход к обработчику
+                        self.tick(3)  # Такты на переход и сохранение контекста
 
     def decode_and_execute(self) -> None:
         """Основной цикл одной CISC-инструкции.
@@ -474,9 +481,9 @@ def main() -> None:
         logging.basicConfig(level=logging.DEBUG, format="%(message)s", filename=args.log, filemode="w", force=True)
 
     with open(args.binary_file, "rb") as f:
-        # Читаем заголовок (8 байт)
-        header = f.read(8)
-        code_size, data_size = struct.unpack("<II", header)
+        # Читаем заголовок (12 байт)
+        header = f.read(12)
+        code_size, data_size, intr_vector = struct.unpack("<III", header)
 
         # Читаем секции по размерам
         instr_mem = f.read(code_size)
@@ -494,16 +501,23 @@ def main() -> None:
         with open(args.input, encoding="utf-8") as f:
             content = f.read()
         dp.input_buffer = list(content)
+        dp.has_input = True
 
     # Обработка прерываний по расписанию (--schedule)
     if args.schedule:
         with open(args.schedule, encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    t_tick, val = line.strip().split(",")
-                    dp.input_schedule.append((int(t_tick), val))
+            content = f.read()
 
-    cu = ControlUnit(dp)
+        # Принудительно заменяем экранированные переносы строк на нормальные
+        content = content.replace("\\r\\n", "\n").replace("\\n", "\n")
+
+        # Разбиваем по строкам
+        for line in content.splitlines():
+            if line.strip():
+                t_tick, val = line.strip().split(",")
+                dp.input_schedule.append((int(t_tick), val))
+
+    cu = ControlUnit(dp, intr_vector=intr_vector)
     cu.run()
     print(f"Simulation finished. Output: {''.join(dp.output_buffer)}")
 

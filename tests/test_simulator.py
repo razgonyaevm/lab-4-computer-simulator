@@ -2,11 +2,12 @@ import os
 import subprocess
 
 
-def run_pipeline(lisp_file, input_content=None, expected_output=None):
+def run_pipeline(lisp_file, input_content=None, schedule_content=None, expected_output=None):
     """Вспомогательная функция для прохождения полного цикла компиляции и симуляции."""
 
     bin_file = "temp_program.bin"
     input_file = "temp_input.txt"
+    schedule_file = "temp_schedule.txt"
     log_file = "temp_simulation.log"
 
     try:
@@ -26,19 +27,25 @@ def run_pipeline(lisp_file, input_content=None, expected_output=None):
                 f.write(input_content)
             cmd += ["--input", input_file]
 
-        # 3. Шаг симуляции
+        # 3. Если есть расписание прерываний, сохраняем во временный файл
+        if schedule_content is not None:
+            with open(schedule_file, "w", encoding="utf-8") as f:
+                f.write(schedule_content)
+            cmd += ["--schedule", schedule_file]
+
+        # 4. Шаг симуляции
         res_mach = subprocess.run(cmd, capture_output=True, text=True)
 
         assert res_mach.returncode == 0, f"Simulation failed: {res_mach.stderr}"
 
-        # 4. Проверяем вывод симулятора
+        # 5. Проверяем вывод симулятора
         if expected_output is not None:
             assert expected_output in res_mach.stdout, (
                 f"Expected '{expected_output}' not found in stdout: '{res_mach.stdout}'"
             )
     finally:
         # Очистка всех временных файлов
-        for temp_file in (bin_file, input_file, log_file):
+        for temp_file in (bin_file, input_file, log_file, schedule_file):
             if os.path.exists(temp_file):
                 os.remove(temp_file)
 
@@ -79,3 +86,10 @@ def test_math64_double_precision():
 def test_project_euler_problem_1():
     """Тест решения задачи по варианту"""
     run_pipeline("examples/prob1.lisp", expected_output="233168")
+
+
+def test_interrupt_integration():
+    """Интеграционный тест для проверки прерываний TRAP по расписанию."""
+    schedule_data = "30,Y\n60,e\n90,s\n"
+
+    run_pipeline(lisp_file="examples/trap_demo.lisp", schedule_content=schedule_data, expected_output="Yes")

@@ -209,6 +209,7 @@ class Translator:
             "if": self._translate_if,
             "while": self._translate_while,
             "defun": self._translate_defun,
+            "definterrupt": self._translate_definterrupt,
             "print": self._translate_print,
             "vload": self._translate_vload,
             "vstore": self._translate_vstore,
@@ -380,6 +381,35 @@ class Translator:
         self.add_instruction(OpCode.RET, AddressingMode.REGISTER, 0, 0)
         self.add_label(skip_lbl)
 
+    def _translate_definterrupt(self, expr: list, local_vars: dict[str, int]) -> None:
+        """Транслирует обработчик прерывания.
+
+        В отличие от обычной функции, он компилируется без пролога/эпилога FP
+        и принудительно завершается командой IRET.
+        """
+
+        func_name = expr[1]
+        bodies = expr[2:]
+
+        skip_lbl = self.get_new_label()
+        self.add_instruction(OpCode.JMP, AddressingMode.IMMEDIATE, 0, 0, skip_lbl)
+
+        self.add_label(func_name)
+
+        # Сохраняем контекст регистров R0 и R1 на стек
+        self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)
+        self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R1)
+
+        for body in bodies:
+            self.translate_expression(body, local_vars)
+
+        # Восстанавливаем контекст регистров R1 и R0 со стека в обратном порядке
+        self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R1, 0)
+        self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R0, 0)
+
+        self.add_instruction(OpCode.IRET, AddressingMode.REGISTER, 0, 0)
+        self.add_label(skip_lbl)
+
     def _translate_print(self, expr: list, local_vars: dict[str, int]) -> None:
         """Транслирует системную операцию вывода (print expr).
 
@@ -525,13 +555,18 @@ def main() -> None:
 
     binary_code = t.compile_to_binary()
 
+    # Определяем вектор прерывания
+    intr_vector = 0
+    if "interrupt_handler" in t.labels:
+        intr_vector = t.labels["interrupt_handler"]
+
     # Упаковываем только реально занятую часть памяти данных
     data_bytes = b""
     for i in range(t.data_ptr):
         data_bytes += struct.pack("<I", t.data_memory[i])
 
-    # Формируем заголовок: [Размер кода (4B)] [Размер данных (4B)]
-    header = struct.pack("<II", len(binary_code), len(data_bytes))
+    # Формируем заголовок: [Размер кода (4B)] [Размер данных (4B)] [Вектор прерывания (4B)]
+    header = struct.pack("<III", len(binary_code), len(data_bytes), intr_vector)
 
     with open(output_file, "wb") as f:
         f.write(header + binary_code + data_bytes)
