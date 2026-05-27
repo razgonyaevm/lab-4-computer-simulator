@@ -1,14 +1,27 @@
+"""Модуль симулятора процессора (виртуальной машины).
+
+Реализует Harvard-архитектуру с потактовым (tick-by-tick) моделированием
+выполнения команд, поддержку системных прерываний (Trap) и портов ввода-вывода (MMIO).
+"""
+
 import struct
 import argparse
 import logging
-import sys
 from src.isa import OpCode, Register, AddressingMode, DATA_MEMORY_SIZE, VECTOR_SIZE, MMIO_INPUT, MMIO_OUTPUT
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 
 class DataPath:
+    """Тракт данных процессора.
+
+    Содержит оперативную память данных, регистровые файлы (скалярный и векторный),
+    буферы последовательного ввода и вывода. Предоставляет интерфейс чтения и записи.
+    """
+
     def __init__(self, data_memory_size, instruction_memory):
+        """Инициализирует память, регистры и системные шины ввода-вывода."""
+
         self.instruction_memory = instruction_memory
         self.data_memory = [0] * data_memory_size
 
@@ -24,6 +37,15 @@ class DataPath:
         self.mmio_input_val = 0  # Выделенный регистр-буфер ввода для MMIO портов
 
     def read_data(self, address):
+        """Читает слово из памяти данных. Перехватывает обращения к порту MMIO_INPUT.
+
+        Args:
+            address: Адрес ячейки памяти или MMIO-порта.
+
+        Returns:
+            32-битное значение (целое число или код символа).
+        """
+
         if address == MMIO_INPUT:
             # Читаем посимвольно из последовательного буфера ввода
             if self.input_buffer:
@@ -38,6 +60,13 @@ class DataPath:
         return self.data_memory[address]
 
     def write_data(self, address, value):
+        """Записывает слово в память данных. Перехватывает обращения к MMIO_OUTPUT.
+
+        Args:
+            address: Адрес назначения в памяти.
+            value: Записываемое значение.
+        """
+
         if address == MMIO_OUTPUT:
             self.data_memory[MMIO_OUTPUT if MMIO_OUTPUT < len(self.data_memory) else 0] = value  # self fallback
             char = chr(value & 0xFF) if 0 <= value <= 255 else str(value)
@@ -47,26 +76,46 @@ class DataPath:
             self.data_memory[address] = value
 
     def push(self, value):
+        """Помещает значение на стек (стек растет вниз, уменьшая SP)."""
+
         self.registers[Register.SP] -= 4
         self.write_data(self.registers[Register.SP], value)
 
     def pop(self):
+        """Извлекает значение с вершины стека, увеличивая SP."""
+
         val = self.read_data(self.registers[Register.SP])
         self.registers[Register.SP] += 4
         return val
 
 
 class ControlUnit:
+    """Управляющее устройство (Hardwired Control Unit) процессора.
+
+    Реализует конечный автомат (FSM) цикла инструкции: Fetch (выборка),
+    Decode (декодирование), Execute (выполнение) и обработку прерываний.
+    """
+
     def __init__(self, data_path: DataPath):
+        """Инициализирует УУ и связывает его с трактом данных."""
+
         self.dp = data_path
         self.tick_count = 0
         self._halt = False
         self.in_interrupt = False
 
     def tick(self, count=1):
+        """Увеличивает счетчик тактов выполнения процессора."""
+
         self.tick_count += count
 
     def check_interrupt_schedule(self):
+        """Проверяет расписание внешних прерываний (Trap).
+
+        При наступлении такта прерывания приостанавливает выполнение программы,
+        сохраняет контекст (PC, SR) на стек и переключает выполнение на обработчик.
+        """
+
         if not self.in_interrupt and self.dp.input_schedule:
             next_intr_tick, value = self.dp.input_schedule[0]
             if self.tick_count >= next_intr_tick:
@@ -86,6 +135,12 @@ class ControlUnit:
                 self.tick(3)  # Такты на переход и сохранение контекста
 
     def decode_and_execute(self):
+        """Основной цикл одной CISC-инструкции.
+
+        Выбирает заголовок команды, считывает операнды (включая переменные Payload),
+        вызывает функции тракта данных и считает такты выполнения.
+        """
+
         self.check_interrupt_schedule()
 
         pc = self.dp.registers[Register.PC]
@@ -284,6 +339,8 @@ class ControlUnit:
             self.dp.registers[Register.PC] += 4
 
     def run(self):
+        """Запускает симуляцию выполнения программы до команды HALT или лимита тактов."""
+
         while not self._halt and self.tick_count < 1_000_000:
             self.decode_and_execute()
         logging.info(f"Finished at tick {self.tick_count}")

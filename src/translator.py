@@ -1,3 +1,9 @@
+"""Модуль транслятора Lisp-подобного языка в бинарный код.
+
+Выполняет токенизацию, построение S-выражений и двухпроходную генерацию
+бинарного машинного кода для CISC-архитектуры.
+"""
+
 import re
 import struct
 import sys
@@ -5,6 +11,18 @@ from src.isa import OpCode, Register, AddressingMode, DATA_MEMORY_SIZE
 
 
 def tokenize(code: str):
+    """Разбивает исходный код программы на токены.
+
+    Использует регулярные выражения для корректного выделения строк
+    в кавычках с пробелами, скобок и символов без нарушения целостности строк.
+
+    Args:
+        code: Строка с исходным кодом на Lisp.
+
+    Returns:
+        Список строковых токенов.
+    """
+
     # Очистка от комментариев и разбиение с учетом скобок
     code = re.sub(r';.*', '', code)
     # Регулярка ищет строки в кавычках, скобки или любые символы без пробелов
@@ -13,6 +31,19 @@ def tokenize(code: str):
 
 
 def parse_s_expression(tokens):
+    """Рекурсивно строит дерево S-выражений из списка токенов.
+
+    Args:
+        tokens: Список токенов, полученных после токенизации.
+
+    Returns:
+        Вложенные списки, представляющие структуру S-выражений,
+        целые числа (для числовых литералов) или строки (для символов).
+
+    Raises:
+        SyntaxError: Если обнаружен неожиданный конец файла (EOF).
+    """
+
     if not tokens:
         raise SyntaxError("Unexpected EOF")
     token = tokens.pop(0)
@@ -33,6 +64,16 @@ def parse_s_expression(tokens):
 
 
 class Instruction:
+    """Представление промежуточной ассемблерной инструкции до бинарной сборки.
+
+    Атрибуты:
+        opcode: Код операции (OpCode).
+        mode: Режим адресации (AddressingMode).
+        reg_d: Индекс целевого регистра.
+        reg_s: Индекс регистра-источника.
+        payload: Дополнительные данные (числовое значение или строковая метка).
+    """
+
     def __init__(self, opcode, mode: AddressingMode = AddressingMode.REGISTER, reg_d=0, reg_s=0, payload=None):
         self.opcode = opcode
         self.mode = mode
@@ -42,7 +83,11 @@ class Instruction:
 
 
 class Translator:
+    """Двухпроходный компилятор Lisp-кода в CISC машинные инструкции."""
+
     def __init__(self):
+        """Инициализирует транслятор, резервируя MMIO порты в таблице символов."""
+
         self.instructions = []
         self.labels = {}
         self.data_memory = [0] * DATA_MEMORY_SIZE
@@ -55,23 +100,53 @@ class Translator:
         self.label_counter = 0
 
     def get_new_label(self):
+        """Генерирует уникальное имя метки для условных переходов и циклов.
+
+        Returns:
+            Строковое имя метки (например, "L_1").
+        """
+
         self.label_counter += 1
         return f"L_{self.label_counter}"
 
     def get_current_address(self):
+        """Вычисляет текущий байтовый адрес в памяти команд.
+
+        Каждая инструкция занимает 4 байта (без payload) или 8 байт (с payload).
+
+        Returns:
+            Адрес следующей инструкции в байтах.
+        """
+
         addr = 0
         for instr in self.instructions:
             addr += 8 if instr.payload is not None else 4
         return addr
 
     def add_instruction(self, opcode, mode: AddressingMode = AddressingMode.REGISTER, reg_d=0, reg_s=0, payload=None):
+        """Добавляет промежуточную инструкцию в список для последующей компиляции."""
+
         instr = Instruction(opcode, mode, reg_d, reg_s, payload)
         self.instructions.append(instr)
 
     def add_label(self, label_name):
+        """Связывает имя метки с текущим байтовым адресом в памяти команд."""
+
         self.labels[label_name] = self.get_current_address()
 
     def allocate_string(self, string):
+        """Выделяет память в секции статических данных под C-style строку.
+
+        Каждый символ строки записывается в отдельное 32-битное машинное слово,
+        в конце ставится null-terminator (0)
+
+        Args:
+            string: Строковый литерал для сохранения.
+
+        Returns:
+            Адрес начала строки в памяти данных (в словах).
+        """
+
         # Каждому символу выделяем по одному целому слову (4 байта)
         addr = self.data_ptr  # Адрес равен индексу слова в памяти данных
         for char in string:
@@ -82,6 +157,13 @@ class Translator:
         return addr
 
     def translate_expression(self, expr, local_vars=None):
+        """Рекурсивно транслирует S-выражение в последовательность инструкций.
+
+        Args:
+            expr: Выражение (список, строка или число).
+            local_vars: Словарь аргументов текущей функции для доступа относительно FP.
+        """
+
         if local_vars is None:
             local_vars = {}
 
@@ -272,6 +354,15 @@ class Translator:
                 self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.SP, 0, len(args) * 4)
 
     def compile_to_binary(self):
+        """Выполняет второй проход компиляции.
+
+        Разрешает символические адреса меток в реальные байтовые смещения
+        и упаковывает структуру инструкций в сырые байты.
+
+        Returns:
+            Байтовая строка (скомпилированный машинный код).
+        """
+
         binary = b""
         for instr in self.instructions:
             payload_val = None
