@@ -4,12 +4,21 @@
 выполнения команд, поддержку системных прерываний (Trap) и портов ввода-вывода (MMIO).
 """
 
-import struct
 import argparse
 import logging
-from src.isa import OpCode, Register, AddressingMode, DATA_MEMORY_SIZE, VECTOR_SIZE, MMIO_INPUT, MMIO_OUTPUT
+import struct
 
-logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+from src.isa import (
+    DATA_MEMORY_SIZE,
+    MMIO_INPUT,
+    MMIO_OUTPUT,
+    VECTOR_SIZE,
+    AddressingMode,
+    OpCode,
+    Register,
+)
+
+logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 
 class DataPath:
@@ -54,8 +63,8 @@ class DataPath:
             else:
                 self.mmio_input_val = 0  # 0 сигнализирует об EOF
 
-            logging.info(
-                f"MMIO: Reading from INPUT: {self.mmio_input_val} ('{chr(self.mmio_input_val) if 0 < self.mmio_input_val <= 255 else 'EOF'}')")
+            char_repr = chr(self.mmio_input_val) if 0 < self.mmio_input_val <= 255 else "EOF"
+            logging.info(f"MMIO: Reading from INPUT: {self.mmio_input_val} ('{char_repr}')")
             return self.mmio_input_val
         return self.data_memory[address]
 
@@ -148,11 +157,12 @@ class ControlUnit:
             self._halt = True
             return
 
-        opcode, mode, reg_d, reg_s = struct.unpack('<BBBB', self.dp.instruction_memory[pc:pc + 4])
+        opcode, mode, reg_d, reg_s = struct.unpack("<BBBB", self.dp.instruction_memory[pc : pc + 4])
         self.tick()
 
         logging.debug(
-            f"TICK: {self.tick_count:4} | PC: {pc:3} | OP: {OpCode(opcode).name} | R0: {self.dp.registers[Register.R0]}")
+            f"TICK: {self.tick_count:4} | PC: {pc:3} | OP: {OpCode(opcode).name} | R0: {self.dp.registers[Register.R0]}"
+        )
 
         if opcode == OpCode.HALT:
             self._halt = True
@@ -160,7 +170,7 @@ class ControlUnit:
 
         elif opcode == OpCode.MOV:
             if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 self.dp.registers[reg_d] = payload
                 self.dp.registers[Register.PC] += 8
                 self.tick()
@@ -171,13 +181,13 @@ class ControlUnit:
 
         elif opcode == OpCode.LOAD:
             if mode == AddressingMode.INDIRECT:
-                offset = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 addr = self.dp.registers[reg_s] + offset
                 self.dp.registers[reg_d] = self.dp.read_data(addr)
                 self.dp.registers[Register.PC] += 8
                 self.tick()
             elif mode == AddressingMode.DIRECT:
-                addr = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 self.dp.registers[reg_d] = self.dp.read_data(addr)
                 self.dp.registers[Register.PC] += 8
                 self.tick()
@@ -185,13 +195,13 @@ class ControlUnit:
 
         elif opcode == OpCode.STORE:
             if mode == AddressingMode.DIRECT:
-                addr = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 self.dp.write_data(addr, self.dp.registers[reg_s])
                 self.dp.registers[Register.PC] += 8
                 self.tick()
             elif mode == AddressingMode.INDIRECT:
                 # Запись по адресу, лежащему в регистре reg_d
-                offset = struct.unpack('<I', self.dp.instruction_memory[pc + 4: pc + 8])[0]
+                offset = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 addr = self.dp.registers[reg_d] + offset
                 self.dp.write_data(addr, self.dp.registers[reg_s])
                 self.dp.registers[Register.PC] += 8
@@ -200,31 +210,35 @@ class ControlUnit:
 
         elif opcode == OpCode.ADD:
             if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 self.dp.registers[reg_d] = (self.dp.registers[reg_d] + payload) & 0xFFFFFFFF  # Переполнение
                 self.dp.registers[Register.PC] += 8
                 self.tick()
             else:
-                self.dp.registers[reg_d] = (self.dp.registers[reg_d] + self.dp.registers[
-                    reg_s]) & 0xFFFFFFFF  # Переполнение
+                self.dp.registers[reg_d] = (
+                    self.dp.registers[reg_d] + self.dp.registers[reg_s]
+                ) & 0xFFFFFFFF  # Переполнение
                 self.dp.registers[Register.PC] += 4
             self.tick()
 
         elif opcode == OpCode.SUB:
-            self.dp.registers[reg_d] = (self.dp.registers[reg_s] - self.dp.registers[
-                reg_d]) & 0xFFFFFFFF  # Переполнение
+            self.dp.registers[reg_d] = (
+                self.dp.registers[reg_s] - self.dp.registers[reg_d]
+            ) & 0xFFFFFFFF  # Переполнение
             self.dp.registers[Register.PC] += 4
             self.tick()
 
         elif opcode == OpCode.MUL:
-            self.dp.registers[reg_d] = (self.dp.registers[reg_s] * self.dp.registers[
-                reg_d]) & 0xFFFFFFFF  # Переполнение
+            self.dp.registers[reg_d] = (
+                self.dp.registers[reg_s] * self.dp.registers[reg_d]
+            ) & 0xFFFFFFFF  # Переполнение
             self.dp.registers[Register.PC] += 4
             self.tick()
 
         elif opcode == OpCode.DIV:
-            self.dp.registers[reg_d] = (self.dp.registers[reg_s] // self.dp.registers[
-                reg_d]) & 0xFFFFFFFF  # Переполнение
+            self.dp.registers[reg_d] = (
+                self.dp.registers[reg_s] // self.dp.registers[reg_d]
+            ) & 0xFFFFFFFF  # Переполнение
             self.dp.registers[Register.PC] += 4
             self.tick()
 
@@ -241,7 +255,7 @@ class ControlUnit:
         elif opcode == OpCode.CMP:
             payload = self.dp.registers[reg_s]
             if mode == AddressingMode.IMMEDIATE:
-                payload = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 val = self.dp.registers[reg_d] - payload
                 self.dp.registers[Register.PC] += 8
                 self.tick()
@@ -257,12 +271,12 @@ class ControlUnit:
             self.tick()
 
         elif opcode == OpCode.JMP:
-            target = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             self.dp.registers[Register.PC] = target
             self.tick(2)
 
         elif opcode == OpCode.JZ:
-            target = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             zf = self.dp.registers[Register.SR] & 1
             if zf == 1:
                 self.dp.registers[Register.PC] = target
@@ -271,7 +285,7 @@ class ControlUnit:
             self.tick(2)
 
         elif opcode == OpCode.JL:
-            target = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             nf = (self.dp.registers[Register.SR] >> 1) & 1
             if nf == 1:
                 self.dp.registers[Register.PC] = target
@@ -280,7 +294,7 @@ class ControlUnit:
             self.tick(2)
 
         elif opcode == OpCode.CALL:
-            target = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             self.dp.push(pc + 8)
             self.dp.registers[Register.PC] = target
             self.tick(2)
@@ -297,7 +311,7 @@ class ControlUnit:
             self.tick(2)
 
         elif opcode == OpCode.INT:
-            payload = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             if payload == 1:
                 # Печать числа
                 val = self.dp.registers[Register.R0]
@@ -322,7 +336,7 @@ class ControlUnit:
         # Векторные операции
         elif opcode == OpCode.VLOAD:
             v_reg = reg_d - 8
-            addr = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             for i in range(VECTOR_SIZE):
                 self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i)
                 self.tick()
@@ -330,7 +344,7 @@ class ControlUnit:
 
         elif opcode == OpCode.VSTORE:
             v_reg = reg_s - 8
-            addr = struct.unpack('<I', self.dp.instruction_memory[pc + 4:pc + 8])[0]
+            addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
             for i in range(VECTOR_SIZE):
                 self.dp.write_data(addr + i, self.dp.vector_registers[v_reg][i])
                 self.tick()
@@ -363,7 +377,7 @@ def main():
     with open(args.binary_file, "rb") as f:
         # Читаем заголовок (8 байт)
         header = f.read(8)
-        code_size, data_size = struct.unpack('<II', header)
+        code_size, data_size = struct.unpack("<II", header)
 
         # Читаем секции по размерам
         instr_mem = f.read(code_size)
@@ -373,18 +387,18 @@ def main():
 
     # Загружаем инициализированные данные в память данных
     for i in range(data_size // 4):
-        val = struct.unpack('<I', data_bytes[i * 4: (i + 1) * 4])[0]
+        val = struct.unpack("<I", data_bytes[i * 4 : (i + 1) * 4])[0]
         dp.data_memory[i] = val
 
     # Явное заполнение последовательного буфера ввода (--input)
     if args.input:
-        with open(args.input, 'r', encoding="utf-8") as f:
+        with open(args.input, encoding="utf-8") as f:
             content = f.read()
         dp.input_buffer = list(content)
 
     # Обработка прерываний по расписанию (--schedule)
     if args.schedule:
-        with open(args.schedule, 'r', encoding="utf-8") as f:
+        with open(args.schedule, encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     t_tick, val = line.strip().split(",")

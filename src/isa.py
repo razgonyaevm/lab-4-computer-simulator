@@ -4,7 +4,7 @@
 а также перечисления для опкодов, регистров общего и специального назначения.
 """
 
-from enum import IntEnum, auto
+from enum import IntEnum
 
 # Размеры памяти
 DATA_MEMORY_SIZE = 4096

@@ -7,7 +7,8 @@
 import re
 import struct
 import sys
-from src.isa import OpCode, Register, AddressingMode, DATA_MEMORY_SIZE
+
+from src.isa import DATA_MEMORY_SIZE, AddressingMode, OpCode, Register
 
 
 def tokenize(code: str):
@@ -24,7 +25,7 @@ def tokenize(code: str):
     """
 
     # Очистка от комментариев и разбиение с учетом скобок
-    code = re.sub(r';.*', '', code)
+    code = re.sub(r";.*", "", code)
     # Регулярка ищет строки в кавычках, скобки или любые символы без пробелов
     pattern = r'"(?:[^"\\]|\\.)*"|[()]|[^\s()]+'
     return re.findall(pattern, code)
@@ -47,9 +48,9 @@ def parse_s_expression(tokens):
     if not tokens:
         raise SyntaxError("Unexpected EOF")
     token = tokens.pop(0)
-    if token == '(':
+    if token == "(":
         lst = []
-        while tokens[0] != ')':
+        while tokens[0] != ")":
             lst.append(parse_s_expression(tokens))
         tokens.pop(0)  # Удаляем ')'
         return lst
@@ -95,7 +96,7 @@ class Translator:
 
         self.symbol_table = {
             "stdin": 0xFF00,  # MMIO_INPUT
-            "stdout": 0xFF01  # MMIO_OUTPUT
+            "stdout": 0xFF01,  # MMIO_OUTPUT
         }
         self.label_counter = 0
 
@@ -316,13 +317,15 @@ class Translator:
             if isinstance(arg, str) and arg not in local_vars and arg not in self.symbol_table:
                 # Печать статистической строки
                 self.translate_expression(arg, local_vars)
-                self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0,
-                                     2)  # INT 2 - системный вызов печати C-строки
+                self.add_instruction(
+                    OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2
+                )  # INT 2 - системный вызов печати C-строки
             else:
                 # Печать числа
                 self.translate_expression(arg, local_vars)
-                self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0,
-                                     1)  # INT 1 - системный вызов печати числа
+                self.add_instruction(
+                    OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 1
+                )  # INT 1 - системный вызов печати числа
 
         # Блок последовательного выполнения выражений: (begin expr1 expr2 ...)
         elif op in ("begin", "progn"):
@@ -377,9 +380,9 @@ class Translator:
                 else:
                     payload_val = instr.payload
 
-            binary += struct.pack('<BBBB', int(instr.opcode), int(instr.mode), int(instr.reg_d), int(instr.reg_s))
+            binary += struct.pack("<BBBB", int(instr.opcode), int(instr.mode), int(instr.reg_d), int(instr.reg_s))
             if payload_val is not None:
-                binary += struct.pack('<I', payload_val)
+                binary += struct.pack("<I", payload_val)
         return binary
 
 
@@ -391,7 +394,7 @@ def main():
     input_file = sys.argv[1]
     output_file = sys.argv[2]
 
-    with open(input_file, "r") as f:
+    with open(input_file, encoding="utf-8") as f:
         source = f.read()
 
     t = Translator()
@@ -408,10 +411,10 @@ def main():
     # Упаковываем только реально занятую часть памяти данных
     data_bytes = b""
     for i in range(t.data_ptr):
-        data_bytes += struct.pack('<I', t.data_memory[i])
+        data_bytes += struct.pack("<I", t.data_memory[i])
 
     # Формируем заголовок: [Размер кода (4B)] [Размер данных (4B)]
-    header = struct.pack('<II', len(binary_code), len(data_bytes))
+    header = struct.pack("<II", len(binary_code), len(data_bytes))
 
     with open(output_file, "wb") as f:
         f.write(header + binary_code + data_bytes)
