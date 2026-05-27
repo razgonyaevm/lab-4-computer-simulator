@@ -371,8 +371,18 @@ def main() -> None:
     parser.add_argument("binary_file", help="Path to compiled program.bin")
     parser.add_argument("--input", help="Path to file with plain input for MMIO stdin", default=None)
     parser.add_argument("--schedule", help="Path to schedule file for TRAP interrupts", default=None)
+    # По умолчанию лог будет писаться в simulation.log
+    parser.add_argument(
+        "--log", help="Path to log file (default: simulation.log, use 'console' for stdout", default="simulation.log"
+    )
 
     args = parser.parse_args()
+
+    # Динамическая настройка логирования на основе флага --log
+    if args.log.lower() == "console":
+        logging.basicConfig(level=logging.DEBUG, format="%(message)s", force=True)
+    else:
+        logging.basicConfig(level=logging.DEBUG, format="%(message)s", filename=args.log, filemode="w", force=True)
 
     with open(args.binary_file, "rb") as f:
         # Читаем заголовок (8 байт)

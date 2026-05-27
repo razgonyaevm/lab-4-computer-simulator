@@ -2,22 +2,80 @@ import os
 import subprocess
 
 
-def test_hello_world_integration():
-    """Тест проверяет сквозную компиляцию и выполнение hello.lisp"""
+def run_pipeline(lisp_file, input_content=None, expected_output=None):
+    """Вспомогательная функция для прохождения полного цикла компиляции и симуляции."""
 
-    # 1. Шаг трансляции
-    result_trans = subprocess.run(
-        ["python", "-m", "src.translator", "examples/hello.lisp", "test_hello.bin"], capture_output=True, text=True
+    bin_file = "temp_program.bin"
+    input_file = "temp_input.txt"
+    log_file = "temp_simulation.log"
+
+    try:
+        # 1. Шаг трансляции
+        res_trans = subprocess.run(
+            ["python", "-m", "src.translator", lisp_file, bin_file], capture_output=True, text=True
+        )
+
+        assert res_trans.returncode == 0, f"Translation failed: {res_trans.stderr}"
+
+        # Формируем команду запуска симуляции с логированием во временный файл
+        cmd = ["python", "-m", "src.machine", bin_file, "--log", log_file]
+
+        # 2. Если есть входные данные, сохраняем их во временный файл ввода
+        if input_content is not None:
+            with open(input_file, "w", encoding="utf-8") as f:
+                f.write(input_content)
+            cmd += ["--input", input_file]
+
+        # 3. Шаг симуляции
+        res_mach = subprocess.run(cmd, capture_output=True, text=True)
+
+        assert res_mach.returncode == 0, f"Simulation failed: {res_mach.stderr}"
+
+        # 4. Проверяем вывод симулятора
+        if expected_output is not None:
+            assert expected_output in res_mach.stdout, (
+                f"Expected '{expected_output}' not found in stdout: '{res_mach.stdout}'"
+            )
+    finally:
+        # Очистка всех временных файлов
+        for temp_file in (bin_file, input_file, log_file):
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+
+
+def test_hello_world():
+    """Тест программы вывода статической строки."""
+    run_pipeline("examples/hello.lisp", expected_output="Hello, World!")
+
+
+def test_cat_stream():
+    """Тест программы копирования потока ввода в вывод."""
+    test_str = "Integration testing of MMIO Stream processing!"
+    run_pipeline("examples/cat.lisp", input_content=test_str, expected_output=test_str)
+
+
+def test_hello_user_name():
+    """Тест интерактивного ввода имени и вывода приветствия."""
+    run_pipeline(
+        "examples/hello_user_name.lisp", input_content="Maxim\n", expected_output="What is your name? Hello, Maxim!"
     )
-    assert result_trans.returncode == 0
-    assert "Compilation successful!" in result_trans.stdout
 
-    # 2. Шаг симуляции
-    result_mach = subprocess.run(["python", "-m", "src.machine", "test_hello.bin"], capture_output=True, text=True)
-    assert result_mach.returncode == 0
-    # Проверка, что в выводе симулятора есть наша строка
-    assert "Simulation finished. Output: Hello, World!" in result_mach.stdout
 
-    # Очистка временного файла
-    if os.path.exists("test_hello.bin"):
-        os.remove("test_hello.bin")
+def test_sort_algorithm():
+    """Тест математической сортировки чисел."""
+    run_pipeline("examples/sort_numbers.lisp", input_content="95 21 100 8 3", expected_output="3 8 21 95 100")
+
+
+def test_sort_ascii():
+    """Тест на сортировку цифр и вывод в ascii коде"""
+    run_pipeline("examples/sort_ascii.lisp", input_content="9521738", expected_output="49 50 51 53 55 56 57")
+
+
+def test_math64_double_precision():
+    """Тест 64-битного сложения с переполнением."""
+    run_pipeline("examples/math64.lisp", expected_output="Result High: 1 Low: 705032704")
+
+
+def test_project_euler_problem_1():
+    """Тест решения задачи по варианту"""
+    run_pipeline("examples/prob1.lisp", expected_output="233168")
