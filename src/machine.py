@@ -28,24 +28,24 @@ class DataPath:
     буферы последовательного ввода и вывода. Предоставляет интерфейс чтения и записи.
     """
 
-    def __init__(self, data_memory_size, instruction_memory):
+    def __init__(self, data_memory_size: int, instruction_memory: bytes) -> None:
         """Инициализирует память, регистры и системные шины ввода-вывода."""
 
-        self.instruction_memory = instruction_memory
-        self.data_memory = [0] * data_memory_size
+        self.instruction_memory: bytes = instruction_memory
+        self.data_memory: list[int] = [0] * data_memory_size
 
-        self.registers = [0] * 16
+        self.registers: list[int] = [0] * 16
         # Вершина стека
         self.registers[Register.SP] = data_memory_size - 4
         self.registers[Register.FP] = data_memory_size - 4
 
-        self.vector_registers = [[0] * VECTOR_SIZE for _ in range(4)]
-        self.input_buffer = []  # Буфер для последовательного ввода (--input)
-        self.output_buffer = []
-        self.input_schedule = []  # Список кортежей (tick, value) для TRAP
-        self.mmio_input_val = 0  # Выделенный регистр-буфер ввода для MMIO портов
+        self.vector_registers: list[list[int]] = [[0] * VECTOR_SIZE for _ in range(4)]
+        self.input_buffer: list[str] = []  # Буфер для последовательного ввода (--input)
+        self.output_buffer: list[str] = []
+        self.input_schedule: list[tuple[int, str]] = []  # Список кортежей (tick, value) для TRAP
+        self.mmio_input_val: int = 0  # Выделенный регистр-буфер ввода для MMIO портов
 
-    def read_data(self, address):
+    def read_data(self, address: int) -> int:
         """Читает слово из памяти данных. Перехватывает обращения к порту MMIO_INPUT.
 
         Args:
@@ -68,7 +68,7 @@ class DataPath:
             return self.mmio_input_val
         return self.data_memory[address]
 
-    def write_data(self, address, value):
+    def write_data(self, address: int, value: int) -> None:
         """Записывает слово в память данных. Перехватывает обращения к MMIO_OUTPUT.
 
         Args:
@@ -84,13 +84,13 @@ class DataPath:
         else:
             self.data_memory[address] = value
 
-    def push(self, value):
+    def push(self, value: int) -> None:
         """Помещает значение на стек (стек растет вниз, уменьшая SP)."""
 
         self.registers[Register.SP] -= 4
         self.write_data(self.registers[Register.SP], value)
 
-    def pop(self):
+    def pop(self) -> int:
         """Извлекает значение с вершины стека, увеличивая SP."""
 
         val = self.read_data(self.registers[Register.SP])
@@ -105,20 +105,20 @@ class ControlUnit:
     Decode (декодирование), Execute (выполнение) и обработку прерываний.
     """
 
-    def __init__(self, data_path: DataPath):
+    def __init__(self, data_path: DataPath) -> None:
         """Инициализирует УУ и связывает его с трактом данных."""
 
-        self.dp = data_path
-        self.tick_count = 0
-        self._halt = False
-        self.in_interrupt = False
+        self.dp: DataPath = data_path
+        self.tick_count: int = 0
+        self._halt: bool = False
+        self.in_interrupt: bool = False
 
-    def tick(self, count=1):
+    def tick(self, count: int = 1) -> None:
         """Увеличивает счетчик тактов выполнения процессора."""
 
         self.tick_count += count
 
-    def check_interrupt_schedule(self):
+    def check_interrupt_schedule(self) -> None:
         """Проверяет расписание внешних прерываний (Trap).
 
         При наступлении такта прерывания приостанавливает выполнение программы,
@@ -143,7 +143,7 @@ class ControlUnit:
                 self.dp.registers[Register.PC] = 4  # Переход к обработчику
                 self.tick(3)  # Такты на переход и сохранение контекста
 
-    def decode_and_execute(self):
+    def decode_and_execute(self) -> None:
         """Основной цикл одной CISC-инструкции.
 
         Выбирает заголовок команды, считывает операнды (включая переменные Payload),
@@ -321,7 +321,7 @@ class ControlUnit:
                 # Печать C-style строки (null-terminated)
                 addr = self.dp.registers[Register.R0]
                 char_code = self.dp.read_data(addr)
-                string_chars = []
+                string_chars: list[str] = []
                 while char_code != 0 and len(string_chars) < 1000:  # Ограничитель безопасности
                     string_chars.append(chr(char_code))
                     addr += 1  # Переход на одно слово вперед
@@ -358,7 +358,7 @@ class ControlUnit:
                 self.tick()
             self.dp.registers[Register.PC] += 4
 
-    def run(self):
+    def run(self) -> None:
         """Запускает симуляцию выполнения программы до команды HALT или лимита тактов."""
 
         while not self._halt and self.tick_count < 1_000_000:
@@ -366,7 +366,7 @@ class ControlUnit:
         logging.info(f"Finished at tick {self.tick_count}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="CISC Harvard Processor Simulator")
     parser.add_argument("binary_file", help="Path to compiled program.bin")
     parser.add_argument("--input", help="Path to file with plain input for MMIO stdin", default=None)

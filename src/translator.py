@@ -7,11 +7,12 @@
 import re
 import struct
 import sys
+from typing import Any
 
 from src.isa import DATA_MEMORY_SIZE, AddressingMode, OpCode, Register
 
 
-def tokenize(code: str):
+def tokenize(code: str) -> list[str]:
     """Разбивает исходный код программы на токены.
 
     Использует регулярные выражения для корректного выделения строк
@@ -31,7 +32,7 @@ def tokenize(code: str):
     return re.findall(pattern, code)
 
 
-def parse_s_expression(tokens):
+def parse_s_expression(tokens: list[str]) -> Any:
     """Рекурсивно строит дерево S-выражений из списка токенов.
 
     Args:
@@ -49,7 +50,7 @@ def parse_s_expression(tokens):
         raise SyntaxError("Unexpected EOF")
     token = tokens.pop(0)
     if token == "(":
-        lst = []
+        lst: list[Any] = []
         while tokens[0] != ")":
             lst.append(parse_s_expression(tokens))
         tokens.pop(0)  # Удаляем ')'
@@ -75,32 +76,39 @@ class Instruction:
         payload: Дополнительные данные (числовое значение или строковая метка).
     """
 
-    def __init__(self, opcode, mode: AddressingMode = AddressingMode.REGISTER, reg_d=0, reg_s=0, payload=None):
-        self.opcode = opcode
-        self.mode = mode
-        self.reg_d = reg_d
-        self.reg_s = reg_s
-        self.payload = payload
+    def __init__(
+        self,
+        opcode: OpCode,
+        mode: AddressingMode = AddressingMode.REGISTER,
+        reg_d: int = 0,
+        reg_s: int = 0,
+        payload: int | str | None = None,
+    ) -> None:
+        self.opcode: OpCode = opcode
+        self.mode: AddressingMode = mode
+        self.reg_d: int = reg_d
+        self.reg_s: int = reg_s
+        self.payload: int | str | None = payload
 
 
 class Translator:
     """Двухпроходный компилятор Lisp-кода в CISC машинные инструкции."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Инициализирует транслятор, резервируя MMIO порты в таблице символов."""
 
-        self.instructions = []
-        self.labels = {}
-        self.data_memory = [0] * DATA_MEMORY_SIZE
-        self.data_ptr = 0
+        self.instructions: list[Instruction] = []
+        self.labels: dict[str, int] = {}
+        self.data_memory: list[int] = [0] * DATA_MEMORY_SIZE
+        self.data_ptr: int = 0
 
         self.symbol_table = {
             "stdin": 0xFF00,  # MMIO_INPUT
             "stdout": 0xFF01,  # MMIO_OUTPUT
         }
-        self.label_counter = 0
+        self.label_counter: int = 0
 
-    def get_new_label(self):
+    def get_new_label(self) -> str:
         """Генерирует уникальное имя метки для условных переходов и циклов.
 
         Returns:
@@ -110,7 +118,7 @@ class Translator:
         self.label_counter += 1
         return f"L_{self.label_counter}"
 
-    def get_current_address(self):
+    def get_current_address(self) -> int:
         """Вычисляет текущий байтовый адрес в памяти команд.
 
         Каждая инструкция занимает 4 байта (без payload) или 8 байт (с payload).
@@ -124,18 +132,25 @@ class Translator:
             addr += 8 if instr.payload is not None else 4
         return addr
 
-    def add_instruction(self, opcode, mode: AddressingMode = AddressingMode.REGISTER, reg_d=0, reg_s=0, payload=None):
+    def add_instruction(
+        self,
+        opcode: OpCode,
+        mode: AddressingMode = AddressingMode.REGISTER,
+        reg_d: int = 0,
+        reg_s: int = 0,
+        payload: int | str | None = None,
+    ) -> None:
         """Добавляет промежуточную инструкцию в список для последующей компиляции."""
 
         instr = Instruction(opcode, mode, reg_d, reg_s, payload)
         self.instructions.append(instr)
 
-    def add_label(self, label_name):
+    def add_label(self, label_name: str) -> None:
         """Связывает имя метки с текущим байтовым адресом в памяти команд."""
 
         self.labels[label_name] = self.get_current_address()
 
-    def allocate_string(self, string):
+    def allocate_string(self, string: str) -> int:
         """Выделяет память в секции статических данных под C-style строку.
 
         Каждый символ строки записывается в отдельное 32-битное машинное слово,
@@ -157,7 +172,7 @@ class Translator:
         self.data_ptr += 1
         return addr
 
-    def translate_expression(self, expr, local_vars=None):
+    def translate_expression(self, expr: Any, local_vars: dict[str, int] | None = None) -> None:
         """Рекурсивно транслирует S-выражение в последовательность инструкций.
 
         Args:
@@ -361,7 +376,7 @@ class Translator:
             if args:
                 self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.SP, 0, len(args) * 4)
 
-    def compile_to_binary(self):
+    def compile_to_binary(self) -> bytes:
         """Выполняет второй проход компиляции.
 
         Разрешает символические адреса меток в реальные байтовые смещения
@@ -373,7 +388,7 @@ class Translator:
 
         binary = b""
         for instr in self.instructions:
-            payload_val = None
+            payload_val: int | None = None
             if instr.payload is not None:
                 if isinstance(instr.payload, str):
                     payload_val = self.labels[instr.payload]
@@ -386,7 +401,7 @@ class Translator:
         return binary
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 3:
         print("Usage: python -m src.translator <input_file.lisp> <output_file.bin>")
         sys.exit(1)
