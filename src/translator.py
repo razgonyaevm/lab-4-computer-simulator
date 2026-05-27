@@ -324,6 +324,11 @@ class Translator:
                 self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0,
                                      1)  # INT 1 - системный вызов печати числа
 
+        # Блок последовательного выполнения выражений: (begin expr1 expr2 ...)
+        elif op in ("begin", "progn"):
+            for sub_expr in expr[1:]:
+                self.translate_expression(sub_expr, local_vars)
+
         # Векторные операции
         elif op == "vload":
             # (vload V0 addr) -> VLOAD V0, [addr]
