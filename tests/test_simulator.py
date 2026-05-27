@@ -101,3 +101,11 @@ def test_vector_benchmark_integration():
         "VADD: 110 220 330 440  VSUB: 90 180 270 360  VMUL: 1000 4000 9000 16000  VDIV: 10 10 10 10  VCMP: 1 0 1 0"
     )
     run_pipeline(lisp_file="examples/vector_benchmark.lisp", expected_output=expected_result)
+
+
+def test_recursive_factorial_integration():
+    """Интеграционный тест для проверки рекурсивных вызовов"""
+    run_pipeline(
+        lisp_file="examples/factorial.lisp",
+        expected_output="120"
+    )
