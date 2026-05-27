@@ -47,7 +47,11 @@ class Translator:
         self.labels = {}
         self.data_memory = [0] * DATA_MEMORY_SIZE
         self.data_ptr = 0
-        self.symbol_table = {}
+
+        self.symbol_table = {
+            "stdin": 0xFF00,  # MMIO_INPUT
+            "stdout": 0xFF01  # MMIO_OUTPUT
+        }
         self.label_counter = 0
 
     def get_new_label(self):

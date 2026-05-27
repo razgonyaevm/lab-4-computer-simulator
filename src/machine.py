@@ -1,4 +1,5 @@
 import struct
+import argparse
 import logging
 import sys
 from src.isa import OpCode, Register, AddressingMode, DATA_MEMORY_SIZE, VECTOR_SIZE, MMIO_INPUT, MMIO_OUTPUT
@@ -17,13 +18,22 @@ class DataPath:
         self.registers[Register.FP] = data_memory_size - 4
 
         self.vector_registers = [[0] * VECTOR_SIZE for _ in range(4)]
+        self.input_buffer = []  # Буфер для последовательного ввода (--input)
         self.output_buffer = []
-        self.input_schedule = []  # Список кортежей (tick, value)
+        self.input_schedule = []  # Список кортежей (tick, value) для TRAP
         self.mmio_input_val = 0  # Выделенный регистр-буфер ввода для MMIO портов
 
     def read_data(self, address):
         if address == MMIO_INPUT:
-            logging.info(f"MMIO: Reading from INPUT: {self.mmio_input_val}")
+            # Читаем посимвольно из последовательного буфера ввода
+            if self.input_buffer:
+                char = self.input_buffer.pop(0)
+                self.mmio_input_val = ord(char) if isinstance(char, str) else char
+            else:
+                self.mmio_input_val = 0  # 0 сигнализирует об EOF
+
+            logging.info(
+                f"MMIO: Reading from INPUT: {self.mmio_input_val} ('{chr(self.mmio_input_val) if 0 < self.mmio_input_val <= 255 else 'EOF'}')")
             return self.mmio_input_val
         return self.data_memory[address]
 
@@ -63,8 +73,7 @@ class ControlUnit:
                 self.dp.input_schedule.pop(0)
                 logging.info(f"--- TRAP: Interrupt Triggered at tick {self.tick_count}! Input value: {value} ---")
 
-                # Записываем значение в MMIO порт ввода
-                self.dp.data_memory[MMIO_INPUT] = ord(value) if isinstance(value, str) else value
+                self.dp.mmio_input_val = ord(value) if isinstance(value, str) else value
 
                 # Спасаем контекст на стеке
                 self.dp.push(self.dp.registers[Register.PC])
@@ -247,7 +256,7 @@ class ControlUnit:
             v_reg = reg_d - 8
             addr = struct.unpack('<i', self.dp.instruction_memory[pc + 4:pc + 8])[0]
             for i in range(VECTOR_SIZE):
-                self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i * 4)
+                self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i)
                 self.tick()
             self.dp.registers[Register.PC] += 8
 
@@ -255,7 +264,7 @@ class ControlUnit:
             v_reg = reg_s - 8
             addr = struct.unpack('<i', self.dp.instruction_memory[pc + 4:pc + 8])[0]
             for i in range(VECTOR_SIZE):
-                self.dp.write_data(addr + i * 4, self.dp.vector_registers[v_reg][i])
+                self.dp.write_data(addr + i, self.dp.vector_registers[v_reg][i])
                 self.tick()
             self.dp.registers[Register.PC] += 8
 
@@ -274,13 +283,14 @@ class ControlUnit:
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python -m src.machine <binary_file.bin> [input_schedule.txt]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="CISC Harvard Processor Simulator")
+    parser.add_argument("binary_file", help="Path to compiled program.bin")
+    parser.add_argument("--input", help="Path to file with plain input for MMIO stdin", default=None)
+    parser.add_argument("--schedule", help="Path to schedule file for TRAP interrupts", default=None)
 
-    binary_file = sys.argv[1]
+    args = parser.parse_args()
 
-    with open(binary_file, "rb") as f:
+    with open(args.binary_file, "rb") as f:
         # Читаем заголовок (8 байт)
         header = f.read(8)
         code_size, data_size = struct.unpack('<II', header)
@@ -296,10 +306,15 @@ def main():
         val = struct.unpack('<i', data_bytes[i * 4: (i + 1) * 4])[0]
         dp.data_memory[i] = val
 
-    # Загружаем расписание прерываний из внешнего файла, если он предоставлен
-    if len(sys.argv) > 2:
-        shedule_file = sys.argv[2]
-        with open(shedule_file, 'r') as f:
+    # Явное заполнение последовательного буфера ввода (--input)
+    if args.input:
+        with open(args.input, 'r', encoding="utf-8") as f:
+            content = f.read()
+        dp.input_buffer = list(content)
+
+    # Обработка прерываний по расписанию (--schedule)
+    if args.schedule:
+        with open(args.schedule, 'r', encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     t_tick, val = line.strip().split(",")
