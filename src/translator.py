@@ -214,6 +214,10 @@ class Translator:
             "vload": self._translate_vload,
             "vstore": self._translate_vstore,
             "vadd": self._translate_vadd,
+            "vsub": self._translate_vsub,
+            "vmul": self._translate_vmul,
+            "vdiv": self._translate_vdiv,
+            "vcmp": self._translate_vcmp,
             "begin": self._translate_begin,
             "progn": self._translate_begin,
             "load": self._translate_load,
@@ -454,6 +458,43 @@ class Translator:
         reg_d = getattr(Register, expr[1])
         reg_s = getattr(Register, expr[2])
         self.add_instruction(OpCode.VADD, AddressingMode.REGISTER, reg_d, reg_s)
+
+    def _translate_vsub(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует вычитание векторных регистров (vsub V_dest V_src).
+
+        Генерирует поэлементную векторную инструкцию VSUB.
+        """
+
+        reg_d = getattr(Register, expr[1])
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VSUB, AddressingMode.REGISTER, reg_d, reg_s)
+
+    def _translate_vmul(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует умножение векторных регистров (vmul V_dest V_src).
+
+        Генерирует поэлементную векторную инструкцию VMUL.
+        """
+        reg_d = getattr(Register, expr[1])
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VMUL, AddressingMode.REGISTER, reg_d, reg_s)
+
+    def _translate_vdiv(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует деление векторных регистров (vdiv V_dest V_src).
+
+        Генерирует поэлементную векторную инструкцию VDIV.
+        """
+        reg_d = getattr(Register, expr[1])
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VDIV, AddressingMode.REGISTER, reg_d, reg_s)
+
+    def _translate_vcmp(self, expr: list, _local_vars: dict[str, int]) -> None:
+        """Транслирует сравнение векторных регистров (vcmp V_dest V_src).
+
+        Генерирует поэлементную векторную инструкцию VCMP.
+        """
+        reg_d = getattr(Register, expr[1])
+        reg_s = getattr(Register, expr[2])
+        self.add_instruction(OpCode.VCMP, AddressingMode.REGISTER, reg_d, reg_s)
 
     def _translate_begin(self, expr: list, local_vars: dict[str, int]) -> None:
         """Транслирует блок последовательного выполнения выражений (begin/progn ...)."""

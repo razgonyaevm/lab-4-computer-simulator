@@ -195,6 +195,10 @@ class ControlUnit:
             OpCode.VLOAD: self._execute_vload,
             OpCode.VSTORE: self._execute_vstore,
             OpCode.VADD: self._execute_vadd,
+            OpCode.VSUB: self._execute_vsub,
+            OpCode.VMUL: self._execute_vmul,
+            OpCode.VDIV: self._execute_vdiv,
+            OpCode.VCMP: self._execute_vcmp,
         }
 
         if opcode in handlers:
@@ -450,7 +454,60 @@ class ControlUnit:
         v_dest = reg_d - 8
         v_src = reg_s - 8
         for i in range(VECTOR_SIZE):
-            self.dp.vector_registers[v_dest][i] += self.dp.vector_registers[v_src][i]
+            self.dp.vector_registers[v_dest][i] = (
+                self.dp.vector_registers[v_dest][i] + self.dp.vector_registers[v_src][i]
+            ) & 0xFFFFFFFF
+            self.tick()
+        self.dp.registers[Register.PC] += 4
+
+    def _execute_vsub(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет поэлементное векторное вычитание двух V-регистров за VECTOR_SIZE тактов."""
+
+        v_dest = reg_d - 8
+        v_src = reg_s - 8
+        for i in range(VECTOR_SIZE):
+            self.dp.vector_registers[v_dest][i] = (
+                self.dp.vector_registers[v_dest][i] - self.dp.vector_registers[v_src][i]
+            ) & 0xFFFFFFFF
+            self.tick()
+        self.dp.registers[Register.PC] += 4
+
+    def _execute_vmul(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет поэлементное векторное произведение двух V-регистров за VECTOR_SIZE тактов."""
+
+        v_dest = reg_d - 8
+        v_src = reg_s - 8
+        for i in range(VECTOR_SIZE):
+            self.dp.vector_registers[v_dest][i] = (
+                self.dp.vector_registers[v_dest][i] * self.dp.vector_registers[v_src][i]
+            ) & 0xFFFFFFFF
+            self.tick()
+        self.dp.registers[Register.PC] += 4
+
+    def _execute_vdiv(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет поэлементное векторное деление двух V-регистров за VECTOR_SIZE тактов."""
+
+        v_dest = reg_d - 8
+        v_src = reg_s - 8
+        for i in range(VECTOR_SIZE):
+            if self.dp.vector_registers[v_src][i] != 0:
+                self.dp.vector_registers[v_dest][i] = (
+                    self.dp.vector_registers[v_dest][i] // self.dp.vector_registers[v_src][i]
+                ) & 0xFFFFFFFF
+            else:
+                self.dp.vector_registers[v_dest][i] = 0
+            self.tick()
+        self.dp.registers[Register.PC] += 4
+
+    def _execute_vcmp(self, _mode: int, reg_d: int, reg_s: int, _pc: int) -> None:
+        """Выполняет поэлементное векторное сравнение двух V-регистров за VECTOR_SIZE тактов."""
+
+        v_dest = reg_d - 8
+        v_src = reg_s - 8
+        for i in range(VECTOR_SIZE):
+            self.dp.vector_registers[v_dest][i] = (
+                1 if self.dp.vector_registers[v_dest][i] == self.dp.vector_registers[v_src][i] else 0
+            )
             self.tick()
         self.dp.registers[Register.PC] += 4
 
