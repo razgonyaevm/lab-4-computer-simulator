@@ -582,7 +582,7 @@ class ControlUnit:
     def run(self) -> None:
         """Запускает симуляцию выполнения программы до команды HALT или лимита тактов."""
 
-        while not self._halt and self.tick_count < 1_000_000:
+        while not self._halt and self.tick_count < 5_000_000:
             self.decode_and_execute()
         logging.info(f"Finished at tick {self.tick_count}")
 
@@ -600,13 +600,17 @@ def main() -> None:
         "--log", help="Path to log file (default: simulation.log, use 'console' for stdout", default="simulation.log"
     )
 
+    parser.add_argument("--debug", help="Enable verbose step-by-step instruction tracing", action="store_true")
+
     args = parser.parse_args()
+
+    log_level = logging.DEBUG if args.debug else logging.INFO
 
     # Динамическая настройка логирования на основе флага --log
     if args.log.lower() == "console":
-        logging.basicConfig(level=logging.DEBUG, format="%(message)s", force=True)
+        logging.basicConfig(level=log_level, format="%(message)s", force=True)
     else:
-        logging.basicConfig(level=logging.DEBUG, format="%(message)s", filename=args.log, filemode="w", force=True)
+        logging.basicConfig(level=log_level, format="%(message)s", filename=args.log, filemode="w", force=True)
 
     with open(args.binary_file, "rb") as f:
         # Читаем заголовок (12 байт)
