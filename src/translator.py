@@ -360,16 +360,26 @@ class Translator:
     def _translate_setq(self, expr: list, local_vars: dict[str, int]) -> None:
         """Транслирует операцию присваивания значения переменной (setq var val).
 
-        Вычисляет выражение val в R0, регистрирует переменную в глобальной таблице
-        символов (если её там не было) и сохраняет значение в память по DIRECT-адресу.
+        Проверяет область видимости: если переменная локальная (в local_vars),
+        генерирует косвенную запись на стек [FP + offset]. Если глобальная -
+        записывает в статическую память данных по прямому адресу.
         """
 
         var_name, val = expr[1], expr[2]
-        self.translate_expression(val, local_vars)
-        if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = self.data_ptr
-            self.data_ptr += 1
-        self.add_instruction(OpCode.STORE, AddressingMode.DIRECT, 0, Register.R0, self.symbol_table[var_name])
+        self.translate_expression(val, local_vars)  # Результат вычисления в R0
+
+        # Если переменная локальная (аргумент функции)
+        if var_name in local_vars:
+            arg_idx = local_vars[var_name]
+            offset = 8 + arg_idx * 4
+            # Записываем значение R0 на стек по адресу [FP + offset]
+            self.add_instruction(OpCode.STORE, AddressingMode.INDIRECT, Register.FP, Register.R0, offset)
+        else:
+            # Если переменная глобальная
+            if var_name not in self.symbol_table:
+                self.symbol_table[var_name] = self.data_ptr
+                self.data_ptr += 1
+            self.add_instruction(OpCode.STORE, AddressingMode.DIRECT, 0, Register.R0, self.symbol_table[var_name])
 
     def _translate_binary_operands(self, expr: list, local_vars: dict[str, int]) -> None:
         """Вычисляет два операнда бинарной операции и подготавливает регистры.
