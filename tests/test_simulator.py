@@ -44,8 +44,12 @@ def run_pipeline(lisp_file, input_content=None, schedule_content=None, expected_
                 f"Expected '{expected_output}' not found in stdout: '{res_mach.stdout}'"
             )
     finally:
+        # Формируем пути к сопутствующим файлам отладки, которые создаются транслятором
+        dbg_file = bin_file + ".dbg"
+        txt_file = bin_file + ".txt"
+
         # Очистка всех временных файлов
-        for temp_file in (bin_file, input_file, log_file, schedule_file):
+        for temp_file in (bin_file, input_file, log_file, schedule_file, dbg_file, txt_file):
             if os.path.exists(temp_file):
                 os.remove(temp_file)
 
