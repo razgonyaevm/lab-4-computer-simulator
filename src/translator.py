@@ -69,7 +69,7 @@ def parse_s_expression(tokens: list[str]) -> Any:
         try:
             return int(token)
         except ValueError:
-            # Если это строка в кавычках — убираем кавычки
+            # Если это строка в кавычках - убираем кавычки
             if token.startswith('"') and token.endswith('"'):
                 return token[1:-1]
             return token

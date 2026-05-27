@@ -119,6 +119,49 @@ class ControlUnit:
         self.intr_vector = intr_vector
         self.debug_map: dict[str, str] = debug_map if debug_map is not None else {}
 
+    def dump_memories(self) -> None:
+        """Выводит раздельный дамп памяти команд и памяти данных
+
+        Необходимо для явной верификации состояния Harvard-архитектуры в тестах.
+        """
+
+        logging.info("HARVARD MEMORY DUMP")
+
+        # Дамп памяти команд (Instruction Memory)
+        logging.info("INSTRUCTION MEMORY (Code Section):")
+        pc = 0
+        while pc < len(self.dp.instruction_memory):
+            opcode, mode, reg_d, reg_s = struct.unpack("<BBBB", self.dp.instruction_memory[pc : pc + 4])
+            instr_name = OpCode(opcode).name if opcode in OpCode.__members__.values() else f"0x{opcode:02X}"
+            source = self.debug_map.get(str(pc), "No Source")
+
+            # Определяем, есть ли у команды payload (смещение/константа/адрес)
+            has_payload = mode in (AddressingMode.IMMEDIATE, AddressingMode.DIRECT, AddressingMode.INDIRECT)
+            instr_details = f"   [{pc:04d}]: {instr_name:<6} Mode:{mode:<2} Rd:{reg_d:<2} Rs:{reg_s:<2}"
+            if has_payload and pc + 8 <= len(self.dp.instruction_memory):
+                payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+                instr_details += f" Payload: {payload:<10}"
+                pc += 8
+            else:
+                pc += 4
+            logging.info(f"{instr_details:<60} | {source}")
+
+        logging.info("-" * 80)
+
+        # 2. Дамп памяти данных (Data Memory)
+        logging.info("DATA MEMORY (Used Non-Zero Words & Active Stack):")
+        for addr in range(len(self.dp.data_memory)):
+            val = self.dp.data_memory[addr]
+            # Печатаем ячейку, если она не пустая, или если она находится в активной зоне стека
+            is_stack = addr >= self.dp.registers[Register.SP]
+            is_static = addr < self.dp.registers[Register.SP]  # Всё, что выше стека
+
+            if val != 0 or is_stack:
+                tag = " (STACK)" if is_stack else " (STATIC/GLOBAL)" if is_static else ""
+                char_repr = f"'{chr(val)}'" if 32 <= val <= 126 else ""
+                logging.info(f"  [{addr:04d}]: {val:<10} {char_repr:<5} {tag}")
+        logging.info("=" * 80)
+
     def tick(self, count: int = 1) -> None:
         """Увеличивает счетчик тактов выполнения процессора."""
 
@@ -542,6 +585,9 @@ class ControlUnit:
         while not self._halt and self.tick_count < 1_000_000:
             self.decode_and_execute()
         logging.info(f"Finished at tick {self.tick_count}")
+
+        # Выгружаем обе памяти в лог перед выходом
+        self.dump_memories()
 
 
 def main() -> None:
