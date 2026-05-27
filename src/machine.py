@@ -5,7 +5,9 @@
 """
 
 import argparse
+import json
 import logging
+import os
 import struct
 from collections.abc import Callable
 
@@ -66,7 +68,7 @@ class DataPath:
                 self.mmio_input_val = 0
 
             char_repr = chr(self.mmio_input_val) if 0 < self.mmio_input_val <= 255 else "EOF"
-            logging.info(f"MMIO: Reading from INPUT: {self.mmio_input_val} ('{char_repr}')")
+            logging.info(f">>> INPUT Read: {self.mmio_input_val} ('{char_repr}')")
             return self.mmio_input_val
         return self.data_memory[address]
 
@@ -82,7 +84,7 @@ class DataPath:
             self.data_memory[MMIO_OUTPUT if MMIO_OUTPUT < len(self.data_memory) else 0] = value  # self fallback
             char = chr(value & 0xFF) if 0 <= value <= 255 else str(value)
             self.output_buffer.append(char)
-            logging.info(f"MMIO: Written '{char}' to OUTPUT")
+            logging.info(f"<<< OUTPUT Write: {value} ('{char}')")
         else:
             self.data_memory[address] = value
 
@@ -107,7 +109,7 @@ class ControlUnit:
     Decode (декодирование), Execute (выполнение) и обработку прерываний.
     """
 
-    def __init__(self, data_path: DataPath, intr_vector: int = 0) -> None:
+    def __init__(self, data_path: DataPath, intr_vector: int = 0, debug_map: dict[str, str] | None = None) -> None:
         """Инициализирует УУ и связывает его с трактом данных."""
 
         self.dp: DataPath = data_path
@@ -115,6 +117,7 @@ class ControlUnit:
         self._halt: bool = False
         self.in_interrupt: bool = False
         self.intr_vector = intr_vector
+        self.debug_map: dict[str, str] = debug_map if debug_map is not None else {}
 
     def tick(self, count: int = 1) -> None:
         """Увеличивает счетчик тактов выполнения процессора."""
@@ -168,9 +171,31 @@ class ControlUnit:
         opcode, mode, reg_d, reg_s = struct.unpack("<BBBB", self.dp.instruction_memory[pc : pc + 4])
         self.tick()
 
-        logging.debug(
-            f"TICK: {self.tick_count:4} | PC: {pc:3} | OP: {OpCode(opcode).name} | R0: {self.dp.registers[Register.R0]}"
-        )
+        # Извлекаем оригинальный Lisp-код для текущего PC
+        source_code = self.debug_map.get(str(pc), "Unknown Lisp Source")
+
+        # Форматируем состояние скалярных регистров и флагов
+        reg_strs = []
+        for r in range(8):
+            reg_strs.append(f"R{r}:{self.dp.registers[r]}")
+        reg_strs.append(f"SP:{self.dp.registers[Register.SP]}")
+        reg_strs.append(f"FP:{self.dp.registers[Register.FP]}")
+
+        zf = self.dp.registers[Register.SR] & 1
+        nf = (self.dp.registers[Register.SR] >> 1) & 1
+        reg_strs.append(f"SR:{self.dp.registers[Register.SR]} (ZF={zf}, NF={nf})")
+
+        # Форматируем состояние векторных регистров (только если они используются)
+        v_strs = []
+        for v in range(4):
+            v_strs.append(f"V{v}:{self.dp.vector_registers[v]}")
+
+        # Выводим структурированный лог состояния процессора в журнал
+        logging.debug(f"TICK: {self.tick_count:4} | PC: {pc:3} | Instruction: {OpCode(opcode).name} (Mode: {mode})")
+        logging.debug(f"  LISP SOURCE : {source_code}")
+        logging.debug(f"  SCALAR REGS : {', '.join(reg_strs)}")
+        logging.debug(f"  VECTOR REGS : {', '.join(v_strs)}")
+        logging.debug("-" * 80)
 
         # Таблица диспетчеризации опкодов
         handlers: dict[OpCode, Callable[[int, int, int, int], None]] = {
@@ -546,6 +571,12 @@ def main() -> None:
         instr_mem = f.read(code_size)
         data_bytes = f.read(data_size)
 
+    debug_file = args.binary_file + ".dbg"
+    debug_map = {}
+    if os.path.exists(debug_file):
+        with open(debug_file, encoding="utf-8") as f_debug:
+            debug_map = json.load(f_debug)
+
     dp = DataPath(DATA_MEMORY_SIZE, instr_mem)
 
     # Загружаем инициализированные данные в память данных
@@ -574,7 +605,7 @@ def main() -> None:
                 t_tick, val = line.strip().split(",")
                 dp.input_schedule.append((int(t_tick), val))
 
-    cu = ControlUnit(dp, intr_vector=intr_vector)
+    cu = ControlUnit(dp, intr_vector=intr_vector, debug_map=debug_map)
     cu.run()
     print(f"Simulation finished. Output: {''.join(dp.output_buffer)}")
 

@@ -4,6 +4,7 @@
 бинарного машинного кода для CISC-архитектуры.
 """
 
+import json
 import re
 import struct
 import sys
@@ -11,6 +12,14 @@ from collections.abc import Callable
 from typing import Any
 
 from src.isa import DATA_MEMORY_SIZE, AddressingMode, OpCode, Register
+
+
+def to_lisp_string(expr: Any) -> str:
+    """Рекурсивно преобразует S-выражение обратно в строку формата Lisp"""
+
+    if isinstance(expr, list):
+        return "(" + " ".join(to_lisp_string(x) for x in expr) + ")"
+    return str(expr)
 
 
 def tokenize(code: str) -> list[str]:
@@ -109,6 +118,9 @@ class Translator:
         }
         self.label_counter: int = 0
 
+        self.debug_info: dict[int, str] = {}  # Карта: байтовый адрес -> Lisp-код
+        self.current_source: str = ""  # Текущее транслируемое выражение
+
     def get_new_label(self) -> str:
         """Генерирует уникальное имя метки для условных переходов и циклов.
 
@@ -142,6 +154,10 @@ class Translator:
         payload: int | str | None = None,
     ) -> None:
         """Добавляет промежуточную инструкцию в список для последующей компиляции."""
+
+        # Записываем отладочную информацию для текущего байтового адреса перед добавлением
+        addr = self.get_current_address()
+        self.debug_info[addr] = self.current_source
 
         instr = Instruction(opcode, mode, reg_d, reg_s, payload)
         self.instructions.append(instr)
@@ -183,6 +199,9 @@ class Translator:
 
         if local_vars is None:
             local_vars = {}
+
+        # Запоминаем текущее выражение для генератора инструкций
+        self.current_source = to_lisp_string(expr)
 
         if isinstance(expr, int):
             self.add_instruction(OpCode.MOV, AddressingMode.IMMEDIATE, Register.R0, 0, expr)
@@ -611,6 +630,11 @@ def main() -> None:
 
     with open(output_file, "wb") as f:
         f.write(header + binary_code + data_bytes)
+
+    # Сохраняем отладочную карту в JSON-файл
+    debug_file = output_file + ".dbg"
+    with open(debug_file, "w", encoding="utf-8") as f_debug:
+        json.dump(t.debug_info, f_debug, indent=4)
 
     print(f"Compilation successful! Saved {len(header) + len(binary_code) + len(data_bytes)} bytes to {output_file}")
 
