@@ -1,0 +1,35 @@
+name: Python CI
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Lint with Ruff Check
+      run: ruff check src/ tests/
+
+    - name: Check Formatting with Ruff Format
+      run: ruff format --check src/ tests/
+
+    - name: Type Check with Mypy
+      run: mypy src/
+
+    - name: Run Integration Tests with Pytest
+      run: pytest
