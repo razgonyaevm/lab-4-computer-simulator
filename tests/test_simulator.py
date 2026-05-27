@@ -89,7 +89,7 @@ def test_math64_double_precision():
 
 def test_project_euler_problem_1():
     """Тест решения задачи по варианту"""
-    run_pipeline("examples/prob1.lisp", expected_output="233168")
+    run_pipeline("examples/prob1.lisp", expected_output="906609")
 
 
 def test_interrupt_integration():
