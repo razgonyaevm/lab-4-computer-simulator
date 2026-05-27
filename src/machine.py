@@ -134,6 +134,13 @@ class ControlUnit:
                 self.dp.write_data(addr, self.dp.registers[reg_s])
                 self.dp.registers[Register.PC] += 8
                 self.tick()
+            elif mode == AddressingMode.INDIRECT:
+                # Запись по адресу, лежащему в регистре reg_d
+                offset = struct.unpack('<i', self.dp.instruction_memory[pc + 4: pc + 8])[0]
+                addr = self.dp.registers[reg_d] + offset
+                self.dp.write_data(addr, self.dp.registers[reg_s])
+                self.dp.registers[Register.PC] += 8
+                self.tick()
             self.tick()
 
         elif opcode == OpCode.ADD:

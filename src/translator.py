@@ -208,6 +208,26 @@ class Translator:
 
             self.add_label(skip_lbl)
 
+        # Чтение по динамическому адресу: (load addr)
+        elif op == "load":
+            self.translate_expression(expr[1], local_vars)  # Оцениваем адрес в R0
+            self.add_instruction(OpCode.LOAD, AddressingMode.INDIRECT, Register.R0, Register.R0, 0)
+
+        # Запись по динамическому адресу: (store addr val)
+        elif op == "store":
+            self.translate_expression(expr[2], local_vars)  # Оцениваем значение в R0
+            self.add_instruction(OpCode.PUSH, AddressingMode.REGISTER, 0, Register.R0)  # Сохраняем значение на стек
+            self.translate_expression(expr[1], local_vars)  # Оцениваем адрес в R0
+            self.add_instruction(OpCode.MOV, AddressingMode.REGISTER, Register.R1, Register.R0)  # Адрес переносим в R1
+            self.add_instruction(OpCode.POP, AddressingMode.REGISTER, Register.R0, 0)  # Возвращаем значение в R0
+            # Записываем значение R0 по адресу из R1
+            self.add_instruction(OpCode.STORE, AddressingMode.INDIRECT, Register.R1, Register.R0, 0)
+
+        # Печать строки из памяти: (print-str addr_or_string)
+        elif op == "print-str":
+            self.translate_expression(expr[1], local_vars)
+            self.add_instruction(OpCode.INT, AddressingMode.IMMEDIATE, 0, 0, 2)
+
         # Вывод
         elif op == "print":
             arg = expr[1]
