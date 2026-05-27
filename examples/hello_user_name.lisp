@@ -1,5 +1,5 @@
 ; Выводим приглашение
-(print-str "What is your name? ")
+(print "What is your name? ")
 
 (setq char stdin)
 (setq addr 100) ; Начало буфера для хранения имени
@@ -14,6 +14,6 @@
 (store addr 0) ; Закрываем строку нулем (null-terminator)
 
 ; Выводим приветствие
-(print-str "Hello, ")
+(print "Hello, ")
 (print-str 100) ; Печатаем строку, лежащую по адресу 100
-(print-str "!")
+(print "!")
