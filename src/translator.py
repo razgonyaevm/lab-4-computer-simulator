@@ -121,6 +121,98 @@ class Translator:
         self.debug_info: dict[int, str] = {}  # Карта: байтовый адрес -> Lisp-код
         self.current_source: str = ""  # Текущее транслируемое выражение
 
+    def generate_debug_text(self) -> str:
+        """Генерирует отладочный текстовый вывод в формате:
+        <address> - <HEXCODE> - <mnemonic>
+        """
+
+        lines = []
+        current_address = 0
+        for instr in self.instructions:
+            payload_val = None
+            if instr.payload is not None:
+                if isinstance(instr.payload, str):
+                    payload_val = self.labels[instr.payload]
+                else:
+                    payload_val = instr.payload
+
+            # Временная упаковка одной конкретной инструкции в байты
+            instr_bytes = struct.pack("<BBBB", int(instr.opcode), int(instr.mode), int(instr.reg_d), int(instr.reg_s))
+            if payload_val is not None:
+                instr_bytes += struct.pack("<I", payload_val)
+
+            # Получаем HEX-код команды
+            hex_code = instr_bytes.hex()
+
+            # Форматируем мнемонику
+            mnemonic = Translator._format_mnemonic(instr, payload_val)
+
+            # Записываем в требуемом формате
+            lines.append(f"{current_address} - {hex_code} - {mnemonic}")
+
+            current_address += len(instr_bytes)
+        return "\n".join(lines)
+
+    @staticmethod
+    def _format_mnemonic(instr: Instruction, payload_val: int | None) -> str:
+        """Преобразует бинарную инструкцию в читаемую ассемблерную мнемонику"""
+
+        op_name = instr.opcode.name.lower()
+        reg_d_name = Register(instr.reg_d).name.lower()
+        reg_s_name = Register(instr.reg_s).name.lower()
+
+        if instr.mode == AddressingMode.REGISTER:
+            return Translator._format_register_mode(instr, op_name, reg_d_name, reg_s_name)
+        elif instr.mode == AddressingMode.IMMEDIATE:
+            return Translator._format_immediate_mode(instr, op_name, reg_d_name, payload_val)
+        elif instr.mode == AddressingMode.DIRECT:
+            return Translator._format_direct_mode(instr, op_name, reg_d_name, reg_s_name, payload_val)
+        elif instr.mode == AddressingMode.INDIRECT:
+            return Translator._format_indirect_mode(instr, op_name, reg_d_name, reg_s_name, payload_val)
+
+        return op_name
+
+    @staticmethod
+    def _format_register_mode(instr: Instruction, op_name: str, reg_d: str, reg_s: str) -> str:
+        """Вспомогательный метод форматирования для регистровой адресации"""
+
+        if instr.opcode in (OpCode.PUSH, OpCode.POP):
+            reg = reg_s if instr.opcode == OpCode.PUSH else reg_d
+            return f"{op_name} {reg}"
+        if instr.opcode in (OpCode.RET, OpCode.IRET, OpCode.HALT):
+            return op_name
+        return f"{op_name} {reg_d}, {reg_s}"
+
+    @staticmethod
+    def _format_immediate_mode(instr: Instruction, op_name: str, reg_d: str, payload: int | None) -> str:
+        """Вспомогательный метод форматирования для непосредственной адресации"""
+
+        val = f"#{payload}" if payload is not None else ""
+        if instr.opcode in (OpCode.JMP, OpCode.JZ, OpCode.JL, OpCode.CALL):
+            return f"{op_name} {payload if payload is not None else ''}"
+        return f"{op_name} {reg_d}, {val}"
+
+    @staticmethod
+    def _format_direct_mode(instr: Instruction, op_name: str, reg_d: str, reg_s: str, payload: int | None) -> str:
+        """Вспомогательный метод форматирования для прямой адресации"""
+
+        addr = f"[{payload}]" if payload is not None else ""
+        if instr.opcode == OpCode.STORE:
+            return f"{op_name} {addr}, {reg_s}"
+        if instr.opcode in (OpCode.VLOAD, OpCode.VSTORE):
+            vreg = reg_d if instr.opcode == OpCode.VLOAD else reg_s
+            return f"{op_name} {vreg}, {addr}"
+        return f"{op_name} {reg_d}, {addr}"
+
+    @staticmethod
+    def _format_indirect_mode(instr: Instruction, op_name: str, reg_d: str, reg_s: str, payload: int | None) -> str:
+        """Вспомогательный метод форматирования для косвенной адресации"""
+
+        offset = f"{payload}" if payload is not None else "0"
+        if instr.opcode == OpCode.STORE:
+            return f"{op_name} [{reg_d} + {offset}], {reg_s}"
+        return f"{op_name} {reg_d}, [{reg_s} + {offset}]"
+
     def get_new_label(self) -> str:
         """Генерирует уникальное имя метки для условных переходов и циклов.
 
@@ -630,6 +722,12 @@ def main() -> None:
 
     with open(output_file, "wb") as f:
         f.write(header + binary_code + data_bytes)
+
+    # Генерируем отладочный текстовый дамп мнемоник
+    debug_text = t.generate_debug_text()
+    txt_file = output_file + ".txt"
+    with open(txt_file, "w", encoding="utf-8") as f_txt:
+        f_txt.write(debug_text)
 
     # Сохраняем отладочную карту в JSON-файл
     debug_file = output_file + ".dbg"
