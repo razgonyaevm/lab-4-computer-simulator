@@ -105,7 +105,4 @@ def test_vector_benchmark_integration():
 
 def test_recursive_factorial_integration():
     """Интеграционный тест для проверки рекурсивных вызовов"""
-    run_pipeline(
-        lisp_file="examples/factorial.lisp",
-        expected_output="120"
-    )
+    run_pipeline(lisp_file="examples/factorial.lisp", expected_output="120")
