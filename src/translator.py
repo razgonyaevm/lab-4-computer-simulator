@@ -697,12 +697,17 @@ class Translator:
         for instr in self.instructions:
             payload_val: int | None = None
             if instr.payload is not None:
+                # Если в полезной нагрузке текстовая метка,
+                # заменяем её числовым байтовым адресом перехода
                 if isinstance(instr.payload, str):
                     payload_val = self.labels[instr.payload]
                 else:
                     payload_val = instr.payload
 
+            # Формирование 4-байтового заголовка: [OpCode (1B)] [AddressingMode (1B)] [RegDest (1B)] [RegSrc (1B)]
             binary += struct.pack("<BBBB", int(instr.opcode), int(instr.mode), int(instr.reg_d), int(instr.reg_s))
+
+            # Если требуется, упаковываем 4-байтовый payload в Little-Endian ('<I')
             if payload_val is not None:
                 binary += struct.pack("<I", payload_val)
         return binary
@@ -728,6 +733,7 @@ def main() -> None:
     # Принудительно завершаем программу
     t.add_instruction(OpCode.HALT)
 
+    # Вызываем второй проход компиляции (формируем байт-код инструкций)
     binary_code = t.compile_to_binary()
 
     # Определяем вектор прерывания
@@ -744,6 +750,7 @@ def main() -> None:
     header = struct.pack("<III", len(binary_code), len(data_bytes), intr_vector)
 
     with open(output_file, "wb") as f:
+        # header (12 байт заголовка секций) + binary_code (секция кода) + data_bytes (секция данных)
         f.write(header + binary_code + data_bytes)
 
     # Генерируем отладочный текстовый дамп мнемоник
