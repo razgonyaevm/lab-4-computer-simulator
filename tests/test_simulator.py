@@ -5,10 +5,11 @@
 
 import os
 import subprocess
-import yaml
-import pytest
 
-# Единый блок конфигурации временных файлов (определены ровно по одному разу) <--- РЕШЕНИЕ
+import pytest
+import yaml
+
+# Единый блок конфигурации временных файлов
 TEMP_LISP = "temp_program.lisp"
 TEMP_BIN = "temp_program.bin"
 TEMP_INPUT = "temp_input.txt"
@@ -22,6 +23,7 @@ GOLDEN_DIR = "golden"
 
 def get_golden_tests() -> list[str]:
     """Автоматически находит все файлы конфигураций тестов в папке golden/."""
+
     if os.path.exists(GOLDEN_DIR):
         return sorted([f for f in os.listdir(GOLDEN_DIR) if f.endswith((".yaml", ".yml"))])
     return []
@@ -30,8 +32,9 @@ def get_golden_tests() -> list[str]:
 @pytest.mark.parametrize("golden_file", get_golden_tests())
 def test_golden_scenarios(golden_file: str) -> None:
     """Универсальный параметризованный тест для прогона Golden-сценариев."""
+
     filepath = os.path.join(GOLDEN_DIR, golden_file)
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     try:
@@ -41,15 +44,12 @@ def test_golden_scenarios(golden_file: str) -> None:
 
         # 2. Шаг трансляции
         res_trans = subprocess.run(
-            ["python", "-m", "src.translator", TEMP_LISP, TEMP_BIN],
-            capture_output=True,
-            text=True,
-            check=True
+            ["python", "-m", "src.translator", TEMP_LISP, TEMP_BIN], capture_output=True, text=True, check=True
         )
         assert res_trans.returncode == 0
 
         # 3. Сверяем сгенерированное бинарное дизассемблирование
-        with open(TEMP_TXT, "r", encoding="utf-8") as f_disasm:
+        with open(TEMP_TXT, encoding="utf-8") as f_disasm:
             actual_disasm = f_disasm.read()
         assert actual_disasm.strip() == config["disassembly"].strip()
 
@@ -76,7 +76,7 @@ def test_golden_scenarios(golden_file: str) -> None:
         assert config["expected_stdout"].strip() in res_mach.stdout.strip()
 
         # 7. Сверяем ключевые вехи потактового журнала
-        with open(TEMP_LOG, "r", encoding="utf-8") as f_log:
+        with open(TEMP_LOG, encoding="utf-8") as f_log:
             actual_log = f_log.read()
 
         for expected_line in config["log_journal"].strip().splitlines():
