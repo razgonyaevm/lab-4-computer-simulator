@@ -1,0 +1,600 @@
+source_code: |
+  (store 200 100)
+  (store 201 200)
+  (store 202 300)
+  (store 203 400)
+
+  (store 300 10)
+  (store 301 20)
+  (store 302 30)
+  (store 303 40)
+
+  (store 350 10)
+  (store 351 25)
+  (store 352 30)
+  (store 353 45)
+
+  (vload V0 200)
+  (vload V1 300)
+  (vload V3 350)
+
+  (vload V2 200)
+  (vadd V2 V1)
+  (vstore 400 V2)
+
+  (vload V2 200)
+  (vsub V2 V1)
+  (vstore 410 V2)
+
+  (vload V2 200)
+  (vmul V2 V1)
+  (vstore 420 V2)
+
+  (vload V2 200)
+  (vdiv V2 V1)
+  (vstore 430 V2)
+
+  (vcmp V1 V3)
+  (vstore 440 V1)
+
+  (print "VADD: ")
+  (print (load 400)) (print " ") (print (load 401)) (print " ") (print (load 402)) (print " ") (print (load 403))
+  (print "  ")
+
+  (print "VSUB: ")
+  (print (load 410)) (print " ") (print (load 411)) (print " ") (print (load 412)) (print " ") (print (load 413))
+  (print "  ")
+
+  (print "VMUL: ")
+  (print (load 420)) (print " ") (print (load 421)) (print " ") (print (load 422)) (print " ") (print (load 423))
+  (print "  ")
+
+  (print "VDIV: ")
+  (print (load 430)) (print " ") (print (load 431)) (print " ") (print (load 432)) (print " ") (print (load 433))
+  (print "  ")
+
+  (print "VCMP: ")
+  (print (load 440)) (print " ") (print (load 441)) (print " ") (print (load 442)) (print " ") (print (load 443))
+
+disassembly: |
+  0 - 0102000064000000 - mov r0, #100
+  8 - 04010000 - push r0
+  12 - 01020000c8000000 - mov r0, #200
+  20 - 01010100 - mov r1, r0
+  24 - 05010000 - pop r0
+  28 - 0304010000000000 - store [r1 + 0], r0
+  36 - 01020000c8000000 - mov r0, #200
+  44 - 04010000 - push r0
+  48 - 01020000c9000000 - mov r0, #201
+  56 - 01010100 - mov r1, r0
+  60 - 05010000 - pop r0
+  64 - 0304010000000000 - store [r1 + 0], r0
+  72 - 010200002c010000 - mov r0, #300
+  80 - 04010000 - push r0
+  84 - 01020000ca000000 - mov r0, #202
+  92 - 01010100 - mov r1, r0
+  96 - 05010000 - pop r0
+  100 - 0304010000000000 - store [r1 + 0], r0
+  108 - 0102000090010000 - mov r0, #400
+  116 - 04010000 - push r0
+  120 - 01020000cb000000 - mov r0, #203
+  128 - 01010100 - mov r1, r0
+  132 - 05010000 - pop r0
+  136 - 0304010000000000 - store [r1 + 0], r0
+  144 - 010200000a000000 - mov r0, #10
+  152 - 04010000 - push r0
+  156 - 010200002c010000 - mov r0, #300
+  164 - 01010100 - mov r1, r0
+  168 - 05010000 - pop r0
+  172 - 0304010000000000 - store [r1 + 0], r0
+  180 - 0102000014000000 - mov r0, #20
+  188 - 04010000 - push r0
+  192 - 010200002d010000 - mov r0, #301
+  200 - 01010100 - mov r1, r0
+  204 - 05010000 - pop r0
+  208 - 0304010000000000 - store [r1 + 0], r0
+  216 - 010200001e000000 - mov r0, #30
+  224 - 04010000 - push r0
+  228 - 010200002e010000 - mov r0, #302
+  236 - 01010100 - mov r1, r0
+  240 - 05010000 - pop r0
+  244 - 0304010000000000 - store [r1 + 0], r0
+  252 - 0102000028000000 - mov r0, #40
+  260 - 04010000 - push r0
+  264 - 010200002f010000 - mov r0, #303
+  272 - 01010100 - mov r1, r0
+  276 - 05010000 - pop r0
+  280 - 0304010000000000 - store [r1 + 0], r0
+  288 - 010200000a000000 - mov r0, #10
+  296 - 04010000 - push r0
+  300 - 010200005e010000 - mov r0, #350
+  308 - 01010100 - mov r1, r0
+  312 - 05010000 - pop r0
+  316 - 0304010000000000 - store [r1 + 0], r0
+  324 - 0102000019000000 - mov r0, #25
+  332 - 04010000 - push r0
+  336 - 010200005f010000 - mov r0, #351
+  344 - 01010100 - mov r1, r0
+  348 - 05010000 - pop r0
+  352 - 0304010000000000 - store [r1 + 0], r0
+  360 - 010200001e000000 - mov r0, #30
+  368 - 04010000 - push r0
+  372 - 0102000060010000 - mov r0, #352
+  380 - 01010100 - mov r1, r0
+  384 - 05010000 - pop r0
+  388 - 0304010000000000 - store [r1 + 0], r0
+  396 - 010200002d000000 - mov r0, #45
+  404 - 04010000 - push r0
+  408 - 0102000061010000 - mov r0, #353
+  416 - 01010100 - mov r1, r0
+  420 - 05010000 - pop r0
+  424 - 0304010000000000 - store [r1 + 0], r0
+  432 - 20030800c8000000 - vload v0, [200]
+  440 - 200309002c010000 - vload v1, [300]
+  448 - 20030b005e010000 - vload v3, [350]
+  456 - 20030a00c8000000 - vload v2, [200]
+  464 - 22010a09 - vadd v2, v1
+  468 - 2103000a90010000 - vstore v2, [400]
+  476 - 20030a00c8000000 - vload v2, [200]
+  484 - 23010a09 - vsub v2, v1
+  488 - 2103000a9a010000 - vstore v2, [410]
+  496 - 20030a00c8000000 - vload v2, [200]
+  504 - 24010a09 - vmul v2, v1
+  508 - 2103000aa4010000 - vstore v2, [420]
+  516 - 20030a00c8000000 - vload v2, [200]
+  524 - 25010a09 - vdiv v2, v1
+  528 - 2103000aae010000 - vstore v2, [430]
+  536 - 2601090b - vcmp v1, v3
+  540 - 21030009b8010000 - vstore v1, [440]
+  548 - 0102000000000000 - mov r0, #0
+  556 - 4002000002000000 - int r0, #2
+  564 - 0102000090010000 - mov r0, #400
+  572 - 0204000000000000 - load r0, [r0 + 0]
+  580 - 4002000001000000 - int r0, #1
+  588 - 0102000007000000 - mov r0, #7
+  596 - 4002000002000000 - int r0, #2
+  604 - 0102000091010000 - mov r0, #401
+  612 - 0204000000000000 - load r0, [r0 + 0]
+  620 - 4002000001000000 - int r0, #1
+  628 - 0102000009000000 - mov r0, #9
+  636 - 4002000002000000 - int r0, #2
+  644 - 0102000092010000 - mov r0, #402
+  652 - 0204000000000000 - load r0, [r0 + 0]
+  660 - 4002000001000000 - int r0, #1
+  668 - 010200000b000000 - mov r0, #11
+  676 - 4002000002000000 - int r0, #2
+  684 - 0102000093010000 - mov r0, #403
+  692 - 0204000000000000 - load r0, [r0 + 0]
+  700 - 4002000001000000 - int r0, #1
+  708 - 010200000d000000 - mov r0, #13
+  716 - 4002000002000000 - int r0, #2
+  724 - 0102000010000000 - mov r0, #16
+  732 - 4002000002000000 - int r0, #2
+  740 - 010200009a010000 - mov r0, #410
+  748 - 0204000000000000 - load r0, [r0 + 0]
+  756 - 4002000001000000 - int r0, #1
+  764 - 0102000017000000 - mov r0, #23
+  772 - 4002000002000000 - int r0, #2
+  780 - 010200009b010000 - mov r0, #411
+  788 - 0204000000000000 - load r0, [r0 + 0]
+  796 - 4002000001000000 - int r0, #1
+  804 - 0102000019000000 - mov r0, #25
+  812 - 4002000002000000 - int r0, #2
+  820 - 010200009c010000 - mov r0, #412
+  828 - 0204000000000000 - load r0, [r0 + 0]
+  836 - 4002000001000000 - int r0, #1
+  844 - 010200001b000000 - mov r0, #27
+  852 - 4002000002000000 - int r0, #2
+  860 - 010200009d010000 - mov r0, #413
+  868 - 0204000000000000 - load r0, [r0 + 0]
+  876 - 4002000001000000 - int r0, #1
+  884 - 010200001d000000 - mov r0, #29
+  892 - 4002000002000000 - int r0, #2
+  900 - 0102000020000000 - mov r0, #32
+  908 - 4002000002000000 - int r0, #2
+  916 - 01020000a4010000 - mov r0, #420
+  924 - 0204000000000000 - load r0, [r0 + 0]
+  932 - 4002000001000000 - int r0, #1
+  940 - 0102000027000000 - mov r0, #39
+  948 - 4002000002000000 - int r0, #2
+  956 - 01020000a5010000 - mov r0, #421
+  964 - 0204000000000000 - load r0, [r0 + 0]
+  972 - 4002000001000000 - int r0, #1
+  980 - 0102000029000000 - mov r0, #41
+  988 - 4002000002000000 - int r0, #2
+  996 - 01020000a6010000 - mov r0, #422
+  1004 - 0204000000000000 - load r0, [r0 + 0]
+  1012 - 4002000001000000 - int r0, #1
+  1020 - 010200002b000000 - mov r0, #43
+  1028 - 4002000002000000 - int r0, #2
+  1036 - 01020000a7010000 - mov r0, #423
+  1044 - 0204000000000000 - load r0, [r0 + 0]
+  1052 - 4002000001000000 - int r0, #1
+  1060 - 010200002d000000 - mov r0, #45
+  1068 - 4002000002000000 - int r0, #2
+  1076 - 0102000030000000 - mov r0, #48
+  1084 - 4002000002000000 - int r0, #2
+  1092 - 01020000ae010000 - mov r0, #430
+  1100 - 0204000000000000 - load r0, [r0 + 0]
+  1108 - 4002000001000000 - int r0, #1
+  1116 - 0102000037000000 - mov r0, #55
+  1124 - 4002000002000000 - int r0, #2
+  1132 - 01020000af010000 - mov r0, #431
+  1140 - 0204000000000000 - load r0, [r0 + 0]
+  1148 - 4002000001000000 - int r0, #1
+  1156 - 0102000039000000 - mov r0, #57
+  1164 - 4002000002000000 - int r0, #2
+  1172 - 01020000b0010000 - mov r0, #432
+  1180 - 0204000000000000 - load r0, [r0 + 0]
+  1188 - 4002000001000000 - int r0, #1
+  1196 - 010200003b000000 - mov r0, #59
+  1204 - 4002000002000000 - int r0, #2
+  1212 - 01020000b1010000 - mov r0, #433
+  1220 - 0204000000000000 - load r0, [r0 + 0]
+  1228 - 4002000001000000 - int r0, #1
+  1236 - 010200003d000000 - mov r0, #61
+  1244 - 4002000002000000 - int r0, #2
+  1252 - 0102000040000000 - mov r0, #64
+  1260 - 4002000002000000 - int r0, #2
+  1268 - 01020000b8010000 - mov r0, #440
+  1276 - 0204000000000000 - load r0, [r0 + 0]
+  1284 - 4002000001000000 - int r0, #1
+  1292 - 0102000047000000 - mov r0, #71
+  1300 - 4002000002000000 - int r0, #2
+  1308 - 01020000b9010000 - mov r0, #441
+  1316 - 0204000000000000 - load r0, [r0 + 0]
+  1324 - 4002000001000000 - int r0, #1
+  1332 - 0102000049000000 - mov r0, #73
+  1340 - 4002000002000000 - int r0, #2
+  1348 - 01020000ba010000 - mov r0, #442
+  1356 - 0204000000000000 - load r0, [r0 + 0]
+  1364 - 4002000001000000 - int r0, #1
+  1372 - 010200004b000000 - mov r0, #75
+  1380 - 4002000002000000 - int r0, #2
+  1388 - 01020000bb010000 - mov r0, #443
+  1396 - 0204000000000000 - load r0, [r0 + 0]
+  1404 - 4002000001000000 - int r0, #1
+  1412 - ff010000 - halt
+
+input: ""
+schedule: ""
+
+expected_stdout: "Simulation finished. Output: VADD: 110 220 330 440  VSUB: 90 180 270 360  VMUL: 1000 4000 9000 16000  VDIV: 10 10 10 10  VCMP: 1 0 1 0"
+
+log_journal: |
+  SYSTEM PRINT STRING: VADD: 
+  SYSTEM PRINT INT: 110
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 220
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 330
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 440
+  SYSTEM PRINT STRING:   
+  SYSTEM PRINT STRING: VSUB: 
+  SYSTEM PRINT INT: 90
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 180
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 270
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 360
+  SYSTEM PRINT STRING:   
+  SYSTEM PRINT STRING: VMUL: 
+  SYSTEM PRINT INT: 1000
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 4000
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 9000
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 16000
+  SYSTEM PRINT STRING:   
+  SYSTEM PRINT STRING: VDIV: 
+  SYSTEM PRINT INT: 10
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 10
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 10
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 10
+  SYSTEM PRINT STRING:   
+  SYSTEM PRINT STRING: VCMP: 
+  SYSTEM PRINT INT: 1
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 0
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 1
+  SYSTEM PRINT STRING:  
+  SYSTEM PRINT INT: 0
+  Finished at tick 547
+  HARVARD MEMORY DUMP
+  INSTRUCTION MEMORY (Code Section):
+     [0000]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 100
+     [0008]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 100
+     [0012]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 200              | 200
+     [0020]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 200
+     [0024]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 200
+     [0028]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 200
+     [0036]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 200              | 200
+     [0044]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 200
+     [0048]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 201              | 201
+     [0056]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 201
+     [0060]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 201
+     [0064]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 201
+     [0072]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 300              | 300
+     [0080]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 300
+     [0084]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 202              | 202
+     [0092]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 202
+     [0096]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 202
+     [0100]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 202
+     [0108]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 400              | 400
+     [0116]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 400
+     [0120]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 203              | 203
+     [0128]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 203
+     [0132]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 203
+     [0136]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 203
+     [0144]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 10               | 10
+     [0152]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 10
+     [0156]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 300              | 300
+     [0164]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 300
+     [0168]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 300
+     [0172]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 300
+     [0180]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 20               | 20
+     [0188]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 20
+     [0192]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 301              | 301
+     [0200]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 301
+     [0204]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 301
+     [0208]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 301
+     [0216]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 30               | 30
+     [0224]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 30
+     [0228]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 302              | 302
+     [0236]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 302
+     [0240]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 302
+     [0244]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 302
+     [0252]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 40               | 40
+     [0260]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 40
+     [0264]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 303              | 303
+     [0272]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 303
+     [0276]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 303
+     [0280]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 303
+     [0288]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 10               | 10
+     [0296]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 10
+     [0300]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 350              | 350
+     [0308]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 350
+     [0312]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 350
+     [0316]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 350
+     [0324]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 25               | 25
+     [0332]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 25
+     [0336]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 351              | 351
+     [0344]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 351
+     [0348]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 351
+     [0352]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 351
+     [0360]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 30               | 30
+     [0368]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 30
+     [0372]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 352              | 352
+     [0380]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 352
+     [0384]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 352
+     [0388]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 352
+     [0396]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 45               | 45
+     [0404]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 45
+     [0408]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 353              | 353
+     [0416]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 353
+     [0420]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 353
+     [0424]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 353
+     [0432]: VLOAD  Mode:DIRECT    Rd:8  Rs:0  Payload: 200              | (vload V0 200)
+     [0440]: VLOAD  Mode:DIRECT    Rd:9  Rs:0  Payload: 300              | (vload V1 300)
+     [0448]: VLOAD  Mode:DIRECT    Rd:11 Rs:0  Payload: 350              | (vload V3 350)
+     [0456]: VLOAD  Mode:DIRECT    Rd:10 Rs:0  Payload: 200              | (vload V2 200)
+     [0464]: VADD   Mode:REGISTER  Rd:10 Rs:9                            | (vadd V2 V1)
+     [0468]: VSTORE Mode:DIRECT    Rd:0  Rs:10 Payload: 400              | (vstore 400 V2)
+     [0476]: VLOAD  Mode:DIRECT    Rd:10 Rs:0  Payload: 200              | (vload V2 200)
+     [0484]: VSUB   Mode:REGISTER  Rd:10 Rs:9                            | (vsub V2 V1)
+     [0488]: VSTORE Mode:DIRECT    Rd:0  Rs:10 Payload: 410              | (vstore 410 V2)
+     [0496]: VLOAD  Mode:DIRECT    Rd:10 Rs:0  Payload: 200              | (vload V2 200)
+     [0504]: VMUL   Mode:REGISTER  Rd:10 Rs:9                            | (vmul V2 V1)
+     [0508]: VSTORE Mode:DIRECT    Rd:0  Rs:10 Payload: 420              | (vstore 420 V2)
+     [0516]: VLOAD  Mode:DIRECT    Rd:10 Rs:0  Payload: 200              | (vload V2 200)
+     [0524]: VDIV   Mode:REGISTER  Rd:10 Rs:9                            | (vdiv V2 V1)
+     [0528]: VSTORE Mode:DIRECT    Rd:0  Rs:10 Payload: 430              | (vstore 430 V2)
+     [0536]: VCMP   Mode:REGISTER  Rd:9  Rs:11                           | (vcmp V1 V3)
+     [0540]: VSTORE Mode:DIRECT    Rd:0  Rs:9  Payload: 440              | (vstore 440 V1)
+     [0548]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | VADD: 
+     [0556]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | VADD: 
+     [0564]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 400              | 400
+     [0572]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 400
+     [0580]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 400
+     [0588]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 7                |  
+     [0596]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0604]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 401              | 401
+     [0612]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 401
+     [0620]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 401
+     [0628]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 9                |  
+     [0636]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0644]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 402              | 402
+     [0652]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 402
+     [0660]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 402
+     [0668]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 11               |  
+     [0676]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0684]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 403              | 403
+     [0692]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 403
+     [0700]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 403
+     [0708]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 13               |   
+     [0716]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |   
+     [0724]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 16               | VSUB: 
+     [0732]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | VSUB: 
+     [0740]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 410              | 410
+     [0748]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 410
+     [0756]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 410
+     [0764]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 23               |  
+     [0772]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0780]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 411              | 411
+     [0788]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 411
+     [0796]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 411
+     [0804]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 25               |  
+     [0812]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0820]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 412              | 412
+     [0828]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 412
+     [0836]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 412
+     [0844]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 27               |  
+     [0852]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0860]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 413              | 413
+     [0868]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 413
+     [0876]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 413
+     [0884]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 29               |   
+     [0892]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |   
+     [0900]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 32               | VMUL: 
+     [0908]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | VMUL: 
+     [0916]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 420              | 420
+     [0924]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 420
+     [0932]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 420
+     [0940]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 39               |  
+     [0948]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0956]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 421              | 421
+     [0964]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 421
+     [0972]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 421
+     [0980]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 41               |  
+     [0988]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0996]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 422              | 422
+     [1004]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 422
+     [1012]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 422
+     [1020]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 43               |  
+     [1028]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1036]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 423              | 423
+     [1044]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 423
+     [1052]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 423
+     [1060]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 45               |   
+     [1068]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |   
+     [1076]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 48               | VDIV: 
+     [1084]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | VDIV: 
+     [1092]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 430              | 430
+     [1100]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 430
+     [1108]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 430
+     [1116]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 55               |  
+     [1124]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1132]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 431              | 431
+     [1140]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 431
+     [1148]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 431
+     [1156]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 57               |  
+     [1164]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1172]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 432              | 432
+     [1180]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 432
+     [1188]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 432
+     [1196]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 59               |  
+     [1204]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1212]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 433              | 433
+     [1220]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 433
+     [1228]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 433
+     [1236]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 61               |   
+     [1244]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |   
+     [1252]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 64               | VCMP: 
+     [1260]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | VCMP: 
+     [1268]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 440              | 440
+     [1276]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 440
+     [1284]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 440
+     [1292]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 71               |  
+     [1300]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1308]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 441              | 441
+     [1316]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 441
+     [1324]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 441
+     [1332]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 73               |  
+     [1340]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1348]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 442              | 442
+     [1356]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 442
+     [1364]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 442
+     [1372]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 75               |  
+     [1380]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [1388]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 443              | 443
+     [1396]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 443
+     [1404]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 443
+     [1412]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | 443
+  --------------------------------------------------------------------------------
+  DATA MEMORY (Used Non-Zero Words & Active Stack):
+    [0000]: 86         'V'    (STATIC/GLOBAL)
+    [0001]: 65         'A'    (STATIC/GLOBAL)
+    [0002]: 68         'D'    (STATIC/GLOBAL)
+    [0003]: 68         'D'    (STATIC/GLOBAL)
+    [0004]: 58         ':'    (STATIC/GLOBAL)
+    [0005]: 32         ' '    (STATIC/GLOBAL)
+    [0007]: 32         ' '    (STATIC/GLOBAL)
+    [0009]: 32         ' '    (STATIC/GLOBAL)
+    [0011]: 32         ' '    (STATIC/GLOBAL)
+    [0013]: 32         ' '    (STATIC/GLOBAL)
+    [0014]: 32         ' '    (STATIC/GLOBAL)
+    [0016]: 86         'V'    (STATIC/GLOBAL)
+    [0017]: 83         'S'    (STATIC/GLOBAL)
+    [0018]: 85         'U'    (STATIC/GLOBAL)
+    [0019]: 66         'B'    (STATIC/GLOBAL)
+    [0020]: 58         ':'    (STATIC/GLOBAL)
+    [0021]: 32         ' '    (STATIC/GLOBAL)
+    [0023]: 32         ' '    (STATIC/GLOBAL)
+    [0025]: 32         ' '    (STATIC/GLOBAL)
+    [0027]: 32         ' '    (STATIC/GLOBAL)
+    [0029]: 32         ' '    (STATIC/GLOBAL)
+    [0030]: 32         ' '    (STATIC/GLOBAL)
+    [0032]: 86         'V'    (STATIC/GLOBAL)
+    [0033]: 77         'M'    (STATIC/GLOBAL)
+    [0034]: 85         'U'    (STATIC/GLOBAL)
+    [0035]: 76         'L'    (STATIC/GLOBAL)
+    [0036]: 58         ':'    (STATIC/GLOBAL)
+    [0037]: 32         ' '    (STATIC/GLOBAL)
+    [0039]: 32         ' '    (STATIC/GLOBAL)
+    [0041]: 32         ' '    (STATIC/GLOBAL)
+    [0043]: 32         ' '    (STATIC/GLOBAL)
+    [0045]: 32         ' '    (STATIC/GLOBAL)
+    [0046]: 32         ' '    (STATIC/GLOBAL)
+    [0048]: 86         'V'    (STATIC/GLOBAL)
+    [0049]: 68         'D'    (STATIC/GLOBAL)
+    [0050]: 73         'I'    (STATIC/GLOBAL)
+    [0051]: 86         'V'    (STATIC/GLOBAL)
+    [0052]: 58         ':'    (STATIC/GLOBAL)
+    [0053]: 32         ' '    (STATIC/GLOBAL)
+    [0055]: 32         ' '    (STATIC/GLOBAL)
+    [0057]: 32         ' '    (STATIC/GLOBAL)
+    [0059]: 32         ' '    (STATIC/GLOBAL)
+    [0061]: 32         ' '    (STATIC/GLOBAL)
+    [0062]: 32         ' '    (STATIC/GLOBAL)
+    [0064]: 86         'V'    (STATIC/GLOBAL)
+    [0065]: 67         'C'    (STATIC/GLOBAL)
+    [0066]: 77         'M'    (STATIC/GLOBAL)
+    [0067]: 80         'P'    (STATIC/GLOBAL)
+    [0068]: 58         ':'    (STATIC/GLOBAL)
+    [0069]: 32         ' '    (STATIC/GLOBAL)
+    [0071]: 32         ' '    (STATIC/GLOBAL)
+    [0073]: 32         ' '    (STATIC/GLOBAL)
+    [0075]: 32         ' '    (STATIC/GLOBAL)
+    [0200]: 100        'd'    (STATIC/GLOBAL)
+    [0201]: 200               (STATIC/GLOBAL)
+    [0202]: 300               (STATIC/GLOBAL)
+    [0203]: 400               (STATIC/GLOBAL)
+    [0300]: 10                (STATIC/GLOBAL)
+    [0301]: 20                (STATIC/GLOBAL)
+    [0302]: 30                (STATIC/GLOBAL)
+    [0303]: 40         '('    (STATIC/GLOBAL)
+    [0350]: 10                (STATIC/GLOBAL)
+    [0351]: 25                (STATIC/GLOBAL)
+    [0352]: 30                (STATIC/GLOBAL)
+    [0353]: 45         '-'    (STATIC/GLOBAL)
+    [0400]: 110        'n'    (STATIC/GLOBAL)
+    [0401]: 220               (STATIC/GLOBAL)
+    [0402]: 330               (STATIC/GLOBAL)
+    [0403]: 440               (STATIC/GLOBAL)
+    [0410]: 90         'Z'    (STATIC/GLOBAL)
+    [0411]: 180               (STATIC/GLOBAL)
+    [0412]: 270               (STATIC/GLOBAL)
+    [0413]: 360               (STATIC/GLOBAL)
+    [0420]: 1000              (STATIC/GLOBAL)
+    [0421]: 4000              (STATIC/GLOBAL)
+    [0422]: 9000              (STATIC/GLOBAL)
+    [0423]: 16000             (STATIC/GLOBAL)
+    [0430]: 10                (STATIC/GLOBAL)
+    [0431]: 10                (STATIC/GLOBAL)
+    [0432]: 10                (STATIC/GLOBAL)
+    [0433]: 10                (STATIC/GLOBAL)
+    [0440]: 1                 (STATIC/GLOBAL)
+    [0442]: 1                 (STATIC/GLOBAL)
+    [4088]: 45         '-'    (STATIC/GLOBAL)
+    [4092]: 0                 (STACK)
+    [4093]: 0                 (STACK)
+    [4094]: 0                 (STACK)
+    [4095]: 0                 (STACK)
+  ================================================================================

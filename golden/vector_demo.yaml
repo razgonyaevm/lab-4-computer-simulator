@@ -1,0 +1,581 @@
+source_code: |
+  (store 200 10)
+  (store 201 20)
+  (store 202 30)
+  (store 203 40)
+
+  (store 300 5)
+  (store 301 4)
+  (store 302 3)
+  (store 303 2)
+
+  (vload V0 200)
+  (vload V1 300)
+
+  (vadd V0 V1)
+
+  (vstore 400 V0)
+
+  (print (load 400))
+  (print " ")
+  (print (load 401))
+  (print " ")
+  (print (load 402))
+  (print " ")
+  (print (load 403))
+  (print " ")
+
+disassembly: |
+  0 - 010200000a000000 - mov r0, #10
+  8 - 04010000 - push r0
+  12 - 01020000c8000000 - mov r0, #200
+  20 - 01010100 - mov r1, r0
+  24 - 05010000 - pop r0
+  28 - 0304010000000000 - store [r1 + 0], r0
+  36 - 0102000014000000 - mov r0, #20
+  44 - 04010000 - push r0
+  48 - 01020000c9000000 - mov r0, #201
+  56 - 01010100 - mov r1, r0
+  60 - 05010000 - pop r0
+  64 - 0304010000000000 - store [r1 + 0], r0
+  72 - 010200001e000000 - mov r0, #30
+  80 - 04010000 - push r0
+  84 - 01020000ca000000 - mov r0, #202
+  92 - 01010100 - mov r1, r0
+  96 - 05010000 - pop r0
+  100 - 0304010000000000 - store [r1 + 0], r0
+  108 - 0102000028000000 - mov r0, #40
+  116 - 04010000 - push r0
+  120 - 01020000cb000000 - mov r0, #203
+  128 - 01010100 - mov r1, r0
+  132 - 05010000 - pop r0
+  136 - 0304010000000000 - store [r1 + 0], r0
+  144 - 0102000005000000 - mov r0, #5
+  152 - 04010000 - push r0
+  156 - 010200002c010000 - mov r0, #300
+  164 - 01010100 - mov r1, r0
+  168 - 05010000 - pop r0
+  172 - 0304010000000000 - store [r1 + 0], r0
+  180 - 0102000004000000 - mov r0, #4
+  188 - 04010000 - push r0
+  192 - 010200002d010000 - mov r0, #301
+  200 - 01010100 - mov r1, r0
+  204 - 05010000 - pop r0
+  208 - 0304010000000000 - store [r1 + 0], r0
+  216 - 0102000003000000 - mov r0, #3
+  224 - 04010000 - push r0
+  228 - 010200002e010000 - mov r0, #302
+  236 - 01010100 - mov r1, r0
+  240 - 05010000 - pop r0
+  244 - 0304010000000000 - store [r1 + 0], r0
+  252 - 0102000002000000 - mov r0, #2
+  260 - 04010000 - push r0
+  264 - 010200002f010000 - mov r0, #303
+  272 - 01010100 - mov r1, r0
+  276 - 05010000 - pop r0
+  280 - 0304010000000000 - store [r1 + 0], r0
+  288 - 20030800c8000000 - vload v0, [200]
+  296 - 200309002c010000 - vload v1, [300]
+  304 - 22010809 - vadd v0, v1
+  308 - 2103000890010000 - vstore v0, [400]
+  316 - 0102000090010000 - mov r0, #400
+  324 - 0204000000000000 - load r0, [r0 + 0]
+  332 - 4002000001000000 - int r0, #1
+  340 - 0102000000000000 - mov r0, #0
+  348 - 4002000002000000 - int r0, #2
+  356 - 0102000091010000 - mov r0, #401
+  364 - 0204000000000000 - load r0, [r0 + 0]
+  372 - 4002000001000000 - int r0, #1
+  380 - 0102000002000000 - mov r0, #2
+  388 - 4002000002000000 - int r0, #2
+  396 - 0102000092010000 - mov r0, #402
+  404 - 0204000000000000 - load r0, [r0 + 0]
+  412 - 4002000001000000 - int r0, #1
+  420 - 0102000004000000 - mov r0, #4
+  428 - 4002000002000000 - int r0, #2
+  436 - 0102000093010000 - mov r0, #403
+  444 - 0204000000000000 - load r0, [r0 + 0]
+  452 - 4002000001000000 - int r0, #1
+  460 - 0102000006000000 - mov r0, #6
+  468 - 4002000002000000 - int r0, #2
+  476 - ff010000 - halt
+
+input: ""
+schedule: ""
+
+expected_stdout: "Simulation finished. Output: 15 24 33 42"
+
+log_journal: |
+  TICK:    1 | PC:   0 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 10
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:    4 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 10
+    SCALAR REGS : R0:10, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:    6 | PC:  12 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 200
+    SCALAR REGS : R0:10, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:    9 | PC:  20 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 200
+    SCALAR REGS : R0:200, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   11 | PC:  24 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 200
+    SCALAR REGS : R0:200, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   13 | PC:  28 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 200
+    SCALAR REGS : R0:10, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   16 | PC:  36 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 20
+    SCALAR REGS : R0:10, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   19 | PC:  44 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 20
+    SCALAR REGS : R0:20, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   21 | PC:  48 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 201
+    SCALAR REGS : R0:20, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   24 | PC:  56 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 201
+    SCALAR REGS : R0:201, R1:200, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   26 | PC:  60 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 201
+    SCALAR REGS : R0:201, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   28 | PC:  64 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 201
+    SCALAR REGS : R0:20, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   31 | PC:  72 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 30
+    SCALAR REGS : R0:20, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   34 | PC:  80 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 30
+    SCALAR REGS : R0:30, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   36 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 202
+    SCALAR REGS : R0:30, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   39 | PC:  92 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 202
+    SCALAR REGS : R0:202, R1:201, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   41 | PC:  96 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 202
+    SCALAR REGS : R0:202, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   43 | PC: 100 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 202
+    SCALAR REGS : R0:30, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   46 | PC: 108 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 40
+    SCALAR REGS : R0:30, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   49 | PC: 116 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 40
+    SCALAR REGS : R0:40, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   51 | PC: 120 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 203
+    SCALAR REGS : R0:40, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   54 | PC: 128 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 203
+    SCALAR REGS : R0:203, R1:202, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   56 | PC: 132 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 203
+    SCALAR REGS : R0:203, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   58 | PC: 136 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 203
+    SCALAR REGS : R0:40, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   61 | PC: 144 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 5
+    SCALAR REGS : R0:40, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   64 | PC: 152 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 5
+    SCALAR REGS : R0:5, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   66 | PC: 156 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 300
+    SCALAR REGS : R0:5, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   69 | PC: 164 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 300
+    SCALAR REGS : R0:300, R1:203, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   71 | PC: 168 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 300
+    SCALAR REGS : R0:300, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   73 | PC: 172 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 300
+    SCALAR REGS : R0:5, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   76 | PC: 180 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 4
+    SCALAR REGS : R0:5, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   79 | PC: 188 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 4
+    SCALAR REGS : R0:4, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   81 | PC: 192 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 301
+    SCALAR REGS : R0:4, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   84 | PC: 200 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 301
+    SCALAR REGS : R0:301, R1:300, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   86 | PC: 204 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 301
+    SCALAR REGS : R0:301, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   88 | PC: 208 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 301
+    SCALAR REGS : R0:4, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   91 | PC: 216 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 3
+    SCALAR REGS : R0:4, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   94 | PC: 224 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 3
+    SCALAR REGS : R0:3, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   96 | PC: 228 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 302
+    SCALAR REGS : R0:3, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:   99 | PC: 236 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 302
+    SCALAR REGS : R0:302, R1:301, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  101 | PC: 240 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 302
+    SCALAR REGS : R0:302, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  103 | PC: 244 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 302
+    SCALAR REGS : R0:3, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  106 | PC: 252 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 2
+    SCALAR REGS : R0:3, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  109 | PC: 260 | Instruction: PUSH (Mode: REGISTER)
+    LISP SOURCE : 2
+    SCALAR REGS : R0:2, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  111 | PC: 264 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 303
+    SCALAR REGS : R0:2, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  114 | PC: 272 | Instruction: MOV (Mode: REGISTER)
+    LISP SOURCE : 303
+    SCALAR REGS : R0:303, R1:302, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  116 | PC: 276 | Instruction: POP (Mode: REGISTER)
+    LISP SOURCE : 303
+    SCALAR REGS : R0:303, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4088, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  118 | PC: 280 | Instruction: STORE (Mode: INDIRECT)
+    LISP SOURCE : 303
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  121 | PC: 288 | Instruction: VLOAD (Mode: DIRECT)
+    LISP SOURCE : (vload V0 200)
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  126 | PC: 296 | Instruction: VLOAD (Mode: DIRECT)
+    LISP SOURCE : (vload V1 300)
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[10, 20, 30, 40], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  131 | PC: 304 | Instruction: VADD (Mode: REGISTER)
+    LISP SOURCE : (vadd V0 V1)
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[10, 20, 30, 40], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  136 | PC: 308 | Instruction: VSTORE (Mode: DIRECT)
+    LISP SOURCE : (vstore 400 V0)
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  141 | PC: 316 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 400
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  144 | PC: 324 | Instruction: LOAD (Mode: INDIRECT)
+    LISP SOURCE : 400
+    SCALAR REGS : R0:400, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  147 | PC: 332 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE : 400
+    SCALAR REGS : R0:15, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT INT: 15
+  TICK:  149 | PC: 340 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:15, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  152 | PC: 348 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:0, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT STRING:  
+  TICK:  154 | PC: 356 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 401
+    SCALAR REGS : R0:0, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  157 | PC: 364 | Instruction: LOAD (Mode: INDIRECT)
+    LISP SOURCE : 401
+    SCALAR REGS : R0:401, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  160 | PC: 372 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE : 401
+    SCALAR REGS : R0:24, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT INT: 24
+  TICK:  162 | PC: 380 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:24, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  165 | PC: 388 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT STRING:  
+  TICK:  167 | PC: 396 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 402
+    SCALAR REGS : R0:2, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  170 | PC: 404 | Instruction: LOAD (Mode: INDIRECT)
+    LISP SOURCE : 402
+    SCALAR REGS : R0:402, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  173 | PC: 412 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE : 402
+    SCALAR REGS : R0:33, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT INT: 33
+  TICK:  175 | PC: 420 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:33, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  178 | PC: 428 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:4, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT STRING:  
+  TICK:  180 | PC: 436 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 403
+    SCALAR REGS : R0:4, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  183 | PC: 444 | Instruction: LOAD (Mode: INDIRECT)
+    LISP SOURCE : 403
+    SCALAR REGS : R0:403, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  186 | PC: 452 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE : 403
+    SCALAR REGS : R0:42, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT INT: 42
+  TICK:  188 | PC: 460 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:42, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  191 | PC: 468 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE :  
+    SCALAR REGS : R0:6, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT STRING:  
+  TICK:  193 | PC: 476 | Instruction: HALT (Mode: REGISTER)
+    LISP SOURCE :  
+    SCALAR REGS : R0:6, R1:303, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[15, 24, 33, 42], V1:[5, 4, 3, 2], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  Finished at tick 194
+  HARVARD MEMORY DUMP
+  INSTRUCTION MEMORY (Code Section):
+     [0000]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 10               | 10
+     [0008]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 10
+     [0012]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 200              | 200
+     [0020]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 200
+     [0024]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 200
+     [0028]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 200
+     [0036]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 20               | 20
+     [0044]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 20
+     [0048]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 201              | 201
+     [0056]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 201
+     [0060]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 201
+     [0064]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 201
+     [0072]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 30               | 30
+     [0080]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 30
+     [0084]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 202              | 202
+     [0092]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 202
+     [0096]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 202
+     [0100]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 202
+     [0108]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 40               | 40
+     [0116]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 40
+     [0120]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 203              | 203
+     [0128]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 203
+     [0132]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 203
+     [0136]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 203
+     [0144]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 5                | 5
+     [0152]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 5
+     [0156]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 300              | 300
+     [0164]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 300
+     [0168]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 300
+     [0172]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 300
+     [0180]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 4                | 4
+     [0188]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 4
+     [0192]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 301              | 301
+     [0200]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 301
+     [0204]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 301
+     [0208]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 301
+     [0216]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 3                | 3
+     [0224]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 3
+     [0228]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 302              | 302
+     [0236]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 302
+     [0240]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 302
+     [0244]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 302
+     [0252]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | 2
+     [0260]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 2
+     [0264]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 303              | 303
+     [0272]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | 303
+     [0276]: POP    Mode:REGISTER  Rd:0  Rs:0                            | 303
+     [0280]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | 303
+     [0288]: VLOAD  Mode:DIRECT    Rd:8  Rs:0  Payload: 200              | (vload V0 200)
+     [0296]: VLOAD  Mode:DIRECT    Rd:9  Rs:0  Payload: 300              | (vload V1 300)
+     [0304]: VADD   Mode:REGISTER  Rd:8  Rs:9                            | (vadd V0 V1)
+     [0308]: VSTORE Mode:DIRECT    Rd:0  Rs:8  Payload: 400              | (vstore 400 V0)
+     [0316]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 400              | 400
+     [0324]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 400
+     [0332]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 400
+     [0340]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                |  
+     [0348]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0356]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 401              | 401
+     [0364]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 401
+     [0372]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 401
+     [0380]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0388]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0396]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 402              | 402
+     [0404]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 402
+     [0412]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 402
+     [0420]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 4                |  
+     [0428]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0436]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 403              | 403
+     [0444]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | 403
+     [0452]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 403
+     [0460]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 6                |  
+     [0468]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
+     [0476]: HALT   Mode:REGISTER  Rd:0  Rs:0                            |  
+  --------------------------------------------------------------------------------
+  DATA MEMORY (Used Non-Zero Words & Active Stack):
+    [0000]: 32         ' '    (STATIC/GLOBAL)
+    [0002]: 32         ' '    (STATIC/GLOBAL)
+    [0004]: 32         ' '    (STATIC/GLOBAL)
+    [0006]: 32         ' '    (STATIC/GLOBAL)
+    [0200]: 10                (STATIC/GLOBAL)
+    [0201]: 20                (STATIC/GLOBAL)
+    [0202]: 30                (STATIC/GLOBAL)
+    [0203]: 40         '('    (STATIC/GLOBAL)
+    [0300]: 5                 (STATIC/GLOBAL)
+    [0301]: 4                 (STATIC/GLOBAL)
+    [0302]: 3                 (STATIC/GLOBAL)
+    [0303]: 2                 (STATIC/GLOBAL)
+    [0400]: 15                (STATIC/GLOBAL)
+    [0401]: 24                (STATIC/GLOBAL)
+    [0402]: 33         '!'    (STATIC/GLOBAL)
+    [0403]: 42         '*'    (STATIC/GLOBAL)
+    [4088]: 2                 (STATIC/GLOBAL)
+    [4092]: 0                 (STACK)
+    [4093]: 0                 (STACK)
+    [4094]: 0                 (STACK)
+    [4095]: 0                 (STACK)
+  ================================================================================

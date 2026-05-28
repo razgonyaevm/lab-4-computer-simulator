@@ -54,7 +54,9 @@ def test_golden_scenarios(golden_file: str) -> None:
         assert actual_disasm.strip() == config["disassembly"].strip()
 
         # 4. Подготавливаем аргументы запуска симулятора
-        is_heavy = "prob1" in golden_file
+        heavy_tests = ["prob1", "sort_numbers", "sort_ascii", "cat", "vector_benchmark"]
+
+        is_heavy = any(test_name in golden_file for test_name in heavy_tests)
         limit_val = 5000000 if is_heavy else 10000
         cmd = ["python", "-m", "src.machine", TEMP_BIN, "--log", TEMP_LOG, "--limit", str(limit_val)]
 
