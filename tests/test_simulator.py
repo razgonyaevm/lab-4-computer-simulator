@@ -1,112 +1,90 @@
+"""Модуль автоматического интеграционного тестирования процессора.
+
+Реализует декларативный прогон Golden-тестов на основе конфигурационных файлов YAML.
+"""
+
 import os
 import subprocess
+import yaml
+import pytest
+
+# Единый блок конфигурации временных файлов (определены ровно по одному разу) <--- РЕШЕНИЕ
+TEMP_LISP = "temp_program.lisp"
+TEMP_BIN = "temp_program.bin"
+TEMP_INPUT = "temp_input.txt"
+TEMP_SCHEDULE = "temp_schedule.txt"
+TEMP_LOG = "temp_simulation.log"
+TEMP_DBG = f"{TEMP_BIN}.dbg"
+TEMP_TXT = f"{TEMP_BIN}.txt"
+
+GOLDEN_DIR = "golden"
 
 
-def run_pipeline(lisp_file, input_content=None, schedule_content=None, expected_output=None):
-    """Вспомогательная функция для прохождения полного цикла компиляции и симуляции."""
+def get_golden_tests() -> list[str]:
+    """Автоматически находит все файлы конфигураций тестов в папке golden/."""
+    if os.path.exists(GOLDEN_DIR):
+        return sorted([f for f in os.listdir(GOLDEN_DIR) if f.endswith((".yaml", ".yml"))])
+    return []
 
-    bin_file = "temp_program.bin"
-    input_file = "temp_input.txt"
-    schedule_file = "temp_schedule.txt"
-    log_file = "temp_simulation.log"
+
+@pytest.mark.parametrize("golden_file", get_golden_tests())
+def test_golden_scenarios(golden_file: str) -> None:
+    """Универсальный параметризованный тест для прогона Golden-сценариев."""
+    filepath = os.path.join(GOLDEN_DIR, golden_file)
+    with open(filepath, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
 
     try:
-        # 1. Шаг трансляции
+        # 1. Записываем Lisp-код из YAML во временный файл
+        with open(TEMP_LISP, "w", encoding="utf-8") as f_lisp:
+            f_lisp.write(config["source_code"])
+
+        # 2. Шаг трансляции
         res_trans = subprocess.run(
-            ["python", "-m", "src.translator", lisp_file, bin_file], capture_output=True, text=True
+            ["python", "-m", "src.translator", TEMP_LISP, TEMP_BIN],
+            capture_output=True,
+            text=True,
+            check=True
         )
+        assert res_trans.returncode == 0
 
-        assert res_trans.returncode == 0, f"Translation failed: {res_trans.stderr}"
+        # 3. Сверяем сгенерированное бинарное дизассемблирование
+        with open(TEMP_TXT, "r", encoding="utf-8") as f_disasm:
+            actual_disasm = f_disasm.read()
+        assert actual_disasm.strip() == config["disassembly"].strip()
 
-        # Формируем команду запуска симуляции с логированием во временный файл
-        cmd = ["python", "-m", "src.machine", bin_file, "--log", log_file]
+        # 4. Подготавливаем аргументы запуска симулятора (Fail-Fast по тактам)
+        limit_val = 500000 if "prob1" in golden_file else 1000
+        cmd = ["python", "-m", "src.machine", TEMP_BIN, "--log", TEMP_LOG, "--debug", "--limit", str(limit_val)]
 
-        # 2. Если есть входные данные, сохраняем их во временный файл ввода
-        if input_content is not None:
-            with open(input_file, "w", encoding="utf-8") as f:
-                f.write(input_content)
-            cmd += ["--input", input_file]
+        # Опционально подключаем файлы ввода и расписания
+        if config.get("input"):
+            with open(TEMP_INPUT, "w", encoding="utf-8") as f_in:
+                f_in.write(config["input"])
+            cmd += ["--input", TEMP_INPUT]
 
-        # 3. Если есть расписание прерываний, сохраняем во временный файл
-        if schedule_content is not None:
-            with open(schedule_file, "w", encoding="utf-8") as f:
-                f.write(schedule_content)
-            cmd += ["--schedule", schedule_file]
+        if config.get("schedule"):
+            with open(TEMP_SCHEDULE, "w", encoding="utf-8") as f_sch:
+                f_sch.write(config["schedule"])
+            cmd += ["--schedule", TEMP_SCHEDULE]
 
-        # 4. Шаг симуляции
-        res_mach = subprocess.run(cmd, capture_output=True, text=True)
+        # 5. Шаг симуляции
+        res_mach = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        assert res_mach.returncode == 0
 
-        assert res_mach.returncode == 0, f"Simulation failed: {res_mach.stderr}"
+        # 6. Сверяем вывод в консоль (stdout)
+        assert config["expected_stdout"].strip() in res_mach.stdout.strip()
 
-        # 5. Проверяем вывод симулятора
-        if expected_output is not None:
-            assert expected_output in res_mach.stdout, (
-                f"Expected '{expected_output}' not found in stdout: '{res_mach.stdout}'"
-            )
+        # 7. Сверяем ключевые вехи потактового журнала
+        with open(TEMP_LOG, "r", encoding="utf-8") as f_log:
+            actual_log = f_log.read()
+
+        for expected_line in config["log_journal"].strip().splitlines():
+            if expected_line.strip():
+                assert expected_line.strip() in actual_log
+
     finally:
-        # Формируем пути к сопутствующим файлам отладки, которые создаются транслятором
-        dbg_file = bin_file + ".dbg"
-        txt_file = bin_file + ".txt"
-
-        # Очистка всех временных файлов
-        for temp_file in (bin_file, input_file, log_file, schedule_file, dbg_file, txt_file):
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-
-
-def test_hello_world():
-    """Тест программы вывода статической строки."""
-    run_pipeline("examples/hello.lisp", expected_output="Hello, World!")
-
-
-def test_cat_stream():
-    """Тест программы копирования потока ввода в вывод."""
-    test_str = "Integration testing of MMIO Stream processing!"
-    run_pipeline("examples/cat.lisp", input_content=test_str, expected_output=test_str)
-
-
-def test_hello_user_name():
-    """Тест интерактивного ввода имени и вывода приветствия."""
-    run_pipeline(
-        "examples/hello_user_name.lisp", input_content="Maxim\n", expected_output="What is your name? Hello, Maxim!"
-    )
-
-
-def test_sort_algorithm():
-    """Тест математической сортировки чисел."""
-    run_pipeline("examples/sort_numbers.lisp", input_content="95 21 100 8 3", expected_output="3 8 21 95 100")
-
-
-def test_sort_ascii():
-    """Тест на сортировку цифр и вывод в ascii коде"""
-    run_pipeline("examples/sort_ascii.lisp", input_content="9521738", expected_output="49 50 51 53 55 56 57")
-
-
-def test_math64_double_precision():
-    """Тест 64-битного сложения с переполнением."""
-    run_pipeline("examples/math64.lisp", expected_output="Result High: 1 Low: 705032704")
-
-
-def test_project_euler_problem_1():
-    """Тест решения задачи по варианту"""
-    run_pipeline("examples/prob1.lisp", expected_output="906609")
-
-
-def test_interrupt_integration():
-    """Интеграционный тест для проверки прерываний TRAP по расписанию."""
-    schedule_data = "30,Y\n60,e\n90,s\n"
-
-    run_pipeline(lisp_file="examples/trap_demo.lisp", schedule_content=schedule_data, expected_output="Yes")
-
-
-def test_vector_benchmark_integration():
-    """Интеграционный тест для проверки векторных (SIMD) вычислений."""
-    expected_result = (
-        "VADD: 110 220 330 440  VSUB: 90 180 270 360  VMUL: 1000 4000 9000 16000  VDIV: 10 10 10 10  VCMP: 1 0 1 0"
-    )
-    run_pipeline(lisp_file="examples/vector_benchmark.lisp", expected_output=expected_result)
-
-
-def test_recursive_factorial_integration():
-    """Интеграционный тест для проверки рекурсивных вызовов"""
-    run_pipeline(lisp_file="examples/factorial.lisp", expected_output="120")
+        # Централизованная очистка абсолютно всех созданных файлов
+        for file in (TEMP_LISP, TEMP_BIN, TEMP_DBG, TEMP_TXT, TEMP_INPUT, TEMP_SCHEDULE, TEMP_LOG):
+            if os.path.exists(file):
+                os.remove(file)

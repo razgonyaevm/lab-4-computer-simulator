@@ -1,0 +1,71 @@
+source_code: |
+  (definterrupt interrupt_handler
+      (begin
+          (setq input_val stdin)
+          (setq stdout input_val)))
+  (while 1
+      0)
+
+disassembly: |
+  0 - 300200003c000000 - jmp 60
+  8 - 04010000 - push r0
+  12 - 04010001 - push r1
+  16 - 0203000000ff0000 - load r0, [65280]
+  24 - 0303000000000000 - store [0], r0
+  32 - 0203000000000000 - load r0, [0]
+  40 - 0303000001ff0000 - store [65281], r0
+  48 - 05010100 - pop r1
+  52 - 05010000 - pop r0
+  56 - 41010000 - iret
+  60 - 0102000001000000 - mov r0, #1
+  68 - 1402000000000000 - cmp r0, #0
+  76 - 3102000064000000 - jz 100
+  84 - 0102000000000000 - mov r0, #0
+  92 - 300200003c000000 - jmp 60
+  100 - ff010000 - halt
+
+input: ""
+schedule: |
+  30,Y
+  60,e
+  90,s
+
+expected_stdout: "Simulation finished. Output: Yes"
+
+log_journal: |
+  --- TRAP: Interrupt Triggered at tick 30! Input value: Y ---
+  >>> INPUT Read: 89 ('Y')
+  <<< OUTPUT Write: 89 ('Y')
+  --- TRAP: Interrupt Triggered at tick 62! Input value: e ---
+  >>> INPUT Read: 101 ('e')
+  <<< OUTPUT Write: 101 ('e')
+  --- TRAP: Interrupt Triggered at tick 91! Input value: s ---
+  >>> INPUT Read: 115 ('s')
+  <<< OUTPUT Write: 115 ('s')
+  HARVARD MEMORY DUMP
+  INSTRUCTION MEMORY (Code Section):
+     [0000]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 60               | (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
+     [0008]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
+     [0012]: PUSH   Mode:REGISTER  Rd:0  Rs:1                            | (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
+     [0016]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
+     [0024]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | stdin
+     [0032]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | input_val
+     [0040]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 65281            | input_val
+     [0048]: POP    Mode:REGISTER  Rd:1  Rs:0                            | input_val
+     [0052]: POP    Mode:REGISTER  Rd:0  Rs:0                            | input_val
+     [0056]: IRET   Mode:REGISTER  Rd:0  Rs:0                            | input_val
+     [0060]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
+     [0068]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 1
+     [0076]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 1
+     [0084]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
+     [0092]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 60               | 0
+     [0100]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | 0
+  --------------------------------------------------------------------------------
+  DATA MEMORY (Used Non-Zero Words & Active Stack):
+    [0000]: 115        's'    (STATIC/GLOBAL)
+    [4080]: 1                 (STATIC/GLOBAL)
+    [4088]: 76         'L'    (STATIC/GLOBAL)
+    [4092]: 0                 (STACK)
+    [4093]: 0                 (STACK)
+    [4094]: 0                 (STACK)
+    [4095]: 0                 (STACK)

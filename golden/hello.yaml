@@ -1,0 +1,55 @@
+source_code: |
+  (print "Hello, World!")
+
+disassembly: |
+  0 - 0102000000000000 - mov r0, #0
+  8 - 4002000002000000 - int r0, #2
+  16 - ff010000 - halt
+
+input: ""
+schedule: ""
+
+expected_stdout: "Simulation finished. Output: Hello, World!"
+
+log_journal: |
+  TICK:    1 | PC:   0 | Instruction: MOV (Mode: IMMEDIATE)
+  LISP SOURCE : Hello, World!
+  SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+  VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:    4 | PC:   8 | Instruction: INT (Mode: IMMEDIATE)
+    LISP SOURCE : Hello, World!
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  SYSTEM PRINT STRING: Hello, World!
+  TICK:    6 | PC:  16 | Instruction: HALT (Mode: REGISTER)
+    LISP SOURCE : Hello, World!
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  Finished at tick 7
+  HARVARD MEMORY DUMP
+  INSTRUCTION MEMORY (Code Section):
+     [0000]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | Hello, World!
+     [0008]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | Hello, World!
+     [0016]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | Hello, World!
+  --------------------------------------------------------------------------------
+  DATA MEMORY (Used Non-Zero Words & Active Stack):
+    [0000]: 72         'H'    (STATIC/GLOBAL)
+    [0001]: 101        'e'    (STATIC/GLOBAL)
+    [0002]: 108        'l'    (STATIC/GLOBAL)
+    [0003]: 108        'l'    (STATIC/GLOBAL)
+    [0004]: 111        'o'    (STATIC/GLOBAL)
+    [0005]: 44         ','    (STATIC/GLOBAL)
+    [0006]: 32         ' '    (STATIC/GLOBAL)
+    [0007]: 87         'W'    (STATIC/GLOBAL)
+    [0008]: 111        'o'    (STATIC/GLOBAL)
+    [0009]: 114        'r'    (STATIC/GLOBAL)
+    [0010]: 108        'l'    (STATIC/GLOBAL)
+    [0011]: 100        'd'    (STATIC/GLOBAL)
+    [0012]: 33         '!'    (STATIC/GLOBAL)
+    [4092]: 0                 (STACK)
+    [4093]: 0                 (STACK)
+    [4094]: 0                 (STACK)
+    [4095]: 0                 (STACK)
