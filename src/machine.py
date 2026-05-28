@@ -236,7 +236,9 @@ class ControlUnit:
 
         # Выводим структурированный лог состояния процессора в журнал
         mode_name = AddressingMode(mode).name
-        logging.debug(f"TICK: {self.tick_count:4} | PC: {pc:3} | Instruction: {OpCode(opcode).name} (Mode: {mode_name})")
+        logging.debug(
+            f"TICK: {self.tick_count:4} | PC: {pc:3} | Instruction: {OpCode(opcode).name} (Mode: {mode_name})"
+        )
         logging.debug(f"  LISP SOURCE : {source_code}")
         logging.debug(f"  SCALAR REGS : {', '.join(reg_strs)}")
         logging.debug(f"  VECTOR REGS : {', '.join(v_strs)}")
