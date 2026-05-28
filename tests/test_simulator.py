@@ -54,7 +54,7 @@ def test_golden_scenarios(golden_file: str) -> None:
         assert actual_disasm.strip() == config["disassembly"].strip()
 
         # 4. Подготавливаем аргументы запуска симулятора (Fail-Fast по тактам)
-        limit_val = 500000 if "prob1" in golden_file else 1000
+        limit_val = 500000 if "prob1" in golden_file else 10000
         cmd = ["python", "-m", "src.machine", TEMP_BIN, "--log", TEMP_LOG, "--debug", "--limit", str(limit_val)]
 
         # Опционально подключаем файлы ввода и расписания

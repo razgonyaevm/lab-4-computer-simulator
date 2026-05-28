@@ -1,0 +1,136 @@
+source_code: |
+  (setq char stdin)
+
+  (while char
+      (setq stdout char)
+      (setq char stdin))
+
+disassembly: |
+  0 - 0203000000ff0000 - load r0, [65280]
+  8 - 0303000000000000 - store [0], r0
+  16 - 0203000000000000 - load r0, [0]
+  24 - 1402000000000000 - cmp r0, #0
+  32 - 3102000050000000 - jz 80
+  40 - 0203000000000000 - load r0, [0]
+  48 - 0303000001ff0000 - store [65281], r0
+  56 - 0203000000ff0000 - load r0, [65280]
+  64 - 0303000000000000 - store [0], r0
+  72 - 3002000010000000 - jmp 16
+  80 - ff010000 - halt
+
+input: "Hello, this is my computer architecture lab!"
+schedule: ""
+
+expected_stdout: "Simulation finished. Output: Hello, this is my computer architecture lab!"
+
+log_journal: |
+  >>> INPUT Read: 72 ('H')
+  <<< OUTPUT Write: 72 ('H')
+  >>> INPUT Read: 101 ('e')
+  <<< OUTPUT Write: 101 ('e')
+  >>> INPUT Read: 108 ('l')
+  <<< OUTPUT Write: 108 ('l')
+  >>> INPUT Read: 108 ('l')
+  <<< OUTPUT Write: 108 ('l')
+  >>> INPUT Read: 111 ('o')
+  <<< OUTPUT Write: 111 ('o')
+  >>> INPUT Read: 44 (',')
+  <<< OUTPUT Write: 44 (',')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 116 ('t')
+  <<< OUTPUT Write: 116 ('t')
+  >>> INPUT Read: 104 ('h')
+  <<< OUTPUT Write: 104 ('h')
+  >>> INPUT Read: 105 ('i')
+  <<< OUTPUT Write: 105 ('i')
+  >>> INPUT Read: 115 ('s')
+  <<< OUTPUT Write: 115 ('s')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 105 ('i')
+  <<< OUTPUT Write: 105 ('i')
+  >>> INPUT Read: 115 ('s')
+  <<< OUTPUT Write: 115 ('s')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 109 ('m')
+  <<< OUTPUT Write: 109 ('m')
+  >>> INPUT Read: 121 ('y')
+  <<< OUTPUT Write: 121 ('y')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 99 ('c')
+  <<< OUTPUT Write: 99 ('c')
+  >>> INPUT Read: 111 ('o')
+  <<< OUTPUT Write: 111 ('o')
+  >>> INPUT Read: 109 ('m')
+  <<< OUTPUT Write: 109 ('m')
+  >>> INPUT Read: 112 ('p')
+  <<< OUTPUT Write: 112 ('p')
+  >>> INPUT Read: 117 ('u')
+  <<< OUTPUT Write: 117 ('u')
+  >>> INPUT Read: 116 ('t')
+  <<< OUTPUT Write: 116 ('t')
+  >>> INPUT Read: 101 ('e')
+  <<< OUTPUT Write: 101 ('e')
+  >>> INPUT Read: 114 ('r')
+  <<< OUTPUT Write: 114 ('r')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 97 ('a')
+  <<< OUTPUT Write: 97 ('a')
+  >>> INPUT Read: 114 ('r')
+  <<< OUTPUT Write: 114 ('r')
+  >>> INPUT Read: 99 ('c')
+  <<< OUTPUT Write: 99 ('c')
+  >>> INPUT Read: 104 ('h')
+  <<< OUTPUT Write: 104 ('h')
+  >>> INPUT Read: 105 ('i')
+  <<< OUTPUT Write: 105 ('i')
+  >>> INPUT Read: 116 ('t')
+  <<< OUTPUT Write: 116 ('t')
+  >>> INPUT Read: 101 ('e')
+  <<< OUTPUT Write: 101 ('e')
+  >>> INPUT Read: 99 ('c')
+  <<< OUTPUT Write: 99 ('c')
+  >>> INPUT Read: 116 ('t')
+  <<< OUTPUT Write: 116 ('t')
+  >>> INPUT Read: 117 ('u')
+  <<< OUTPUT Write: 117 ('u')
+  >>> INPUT Read: 114 ('r')
+  <<< OUTPUT Write: 114 ('r')
+  >>> INPUT Read: 101 ('e')
+  <<< OUTPUT Write: 101 ('e')
+  >>> INPUT Read: 32 (' ')
+  <<< OUTPUT Write: 32 (' ')
+  >>> INPUT Read: 108 ('l')
+  <<< OUTPUT Write: 108 ('l')
+  >>> INPUT Read: 97 ('a')
+  <<< OUTPUT Write: 97 ('a')
+  >>> INPUT Read: 98 ('b')
+  <<< OUTPUT Write: 98 ('b')
+  >>> INPUT Read: 33 ('!')
+  <<< OUTPUT Write: 33 ('!')
+  >>> INPUT Read: 0 ('EOF')
+  Finished at tick 1073
+  HARVARD MEMORY DUMP
+  INSTRUCTION MEMORY (Code Section):
+     [0000]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
+     [0008]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | stdin
+     [0016]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | char
+     [0024]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | char
+     [0032]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 80               | char
+     [0040]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | char
+     [0048]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 65281            | char
+     [0056]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
+     [0064]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | stdin
+     [0072]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 16               | stdin
+     [0080]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | stdin
+  --------------------------------------------------------------------------------
+  DATA MEMORY (Used Non-Zero Words & Active Stack):
+    [4092]: 0                 (STACK)
+    [4093]: 0                 (STACK)
+    [4094]: 0                 (STACK)
+    [4095]: 0                 (STACK)
+  ================================================================================
