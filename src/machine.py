@@ -583,10 +583,10 @@ class ControlUnit:
             self.tick()
         self.dp.registers[Register.PC] += 4
 
-    def run(self) -> None:
+    def run(self, limit: int = 5_000_000) -> None:
         """Запускает симуляцию выполнения программы до команды HALT или лимита тактов."""
 
-        while not self._halt and self.tick_count < 5_000_000:
+        while not self._halt and self.tick_count < limit:
             self.decode_and_execute()
         logging.info(f"Finished at tick {self.tick_count}")
 
@@ -602,6 +602,12 @@ def main() -> None:
     # По умолчанию лог будет писаться в simulation.log
     parser.add_argument(
         "--log", help="Path to log file (default: simulation.log, use 'console' for stdout)", default="simulation.log"
+    )
+
+    # Параметр лимита тактов будет задаваться либо системно (5_000_000),
+    # либо пользователем, чтобы избавиться от долгого ожидания
+    parser.add_argument(
+        "--limit", help="Maximum number of ticks to simulate (default: 5_000_000)", type=int, default=5_000_000
     )
 
     parser.add_argument("--debug", help="Enable verbose step-by-step instruction tracing", action="store_true")
@@ -660,7 +666,7 @@ def main() -> None:
                 dp.input_schedule.append((int(t_tick), val))
 
     cu = ControlUnit(dp, intr_vector=intr_vector, debug_map=debug_map)
-    cu.run()
+    cu.run(limit=args.limit)
     print(f"Simulation finished. Output: {''.join(dp.output_buffer)}")
 
 
