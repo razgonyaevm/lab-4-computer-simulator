@@ -137,14 +137,15 @@ class ControlUnit:
 
             # Определяем, есть ли у команды payload (смещение/константа/адрес)
             has_payload = mode in (AddressingMode.IMMEDIATE, AddressingMode.DIRECT, AddressingMode.INDIRECT)
-            instr_details = f"   [{pc:04d}]: {instr_name:<6} Mode:{mode:<2} Rd:{reg_d:<2} Rs:{reg_s:<2}"
+            mode_name = AddressingMode(mode).name
+            instr_details = f"   [{pc:04d}]: {instr_name:<6} Mode:{mode_name:<9} Rd:{reg_d:<2} Rs:{reg_s:<2}"
             if has_payload and pc + 8 <= len(self.dp.instruction_memory):
                 payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 instr_details += f" Payload: {payload:<10}"
                 pc += 8
             else:
                 pc += 4
-            logging.info(f"{instr_details:<60} | {source}")
+            logging.info(f"{instr_details:<70} | {source}")
 
         logging.info("-" * 80)
 
@@ -234,7 +235,8 @@ class ControlUnit:
             v_strs.append(f"V{v}:{self.dp.vector_registers[v]}")
 
         # Выводим структурированный лог состояния процессора в журнал
-        logging.debug(f"TICK: {self.tick_count:4} | PC: {pc:3} | Instruction: {OpCode(opcode).name} (Mode: {mode})")
+        mode_name = AddressingMode(mode).name
+        logging.debug(f"TICK: {self.tick_count:4} | PC: {pc:3} | Instruction: {OpCode(opcode).name} (Mode: {mode_name})")
         logging.debug(f"  LISP SOURCE : {source_code}")
         logging.debug(f"  SCALAR REGS : {', '.join(reg_strs)}")
         logging.debug(f"  VECTOR REGS : {', '.join(v_strs)}")
@@ -597,7 +599,7 @@ def main() -> None:
     parser.add_argument("--schedule", help="Path to schedule file for TRAP interrupts", default=None)
     # По умолчанию лог будет писаться в simulation.log
     parser.add_argument(
-        "--log", help="Path to log file (default: simulation.log, use 'console' for stdout", default="simulation.log"
+        "--log", help="Path to log file (default: simulation.log, use 'console' for stdout)", default="simulation.log"
     )
 
     parser.add_argument("--debug", help="Enable verbose step-by-step instruction tracing", action="store_true")
