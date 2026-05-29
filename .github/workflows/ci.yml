@@ -35,7 +35,7 @@ jobs:
         run: ruff format --check src/ tests/
 
       - name: Type Check with Mypy
-        run: mypy src/
+        run: mypy src/ tests/
 
       - name: Run Integration Tests with Pytest
-        run: pytest
+        run: pytest -v
