@@ -1102,12 +1102,24 @@ python -m src.machine program.bin --debug
 `pytest`:
 
 ```bash
-pytest
+pytest -v
 ```
 
 *Вывод в консоли:*
-`tests/test_simulator.py ...........                          [100%]`
+```
+tests/test_simulator.py::test_golden_scenarios[cat.yaml] PASSED                                                   [  9%]
+tests/test_simulator.py::test_golden_scenarios[factorial.yaml] PASSED                                             [ 18%]
+tests/test_simulator.py::test_golden_scenarios[hello.yaml] PASSED                                                 [ 27%]
+tests/test_simulator.py::test_golden_scenarios[hello_user_name.yaml] PASSED                                       [ 36%]
+tests/test_simulator.py::test_golden_scenarios[math64.yaml] PASSED                                                [ 45%]
+tests/test_simulator.py::test_golden_scenarios[prob1.yaml] PASSED                                                 [ 54%]
+tests/test_simulator.py::test_golden_scenarios[sort_ascii.yaml] PASSED                                            [ 63%]
+tests/test_simulator.py::test_golden_scenarios[sort_numbers.yaml] PASSED                                          [ 72%]
+tests/test_simulator.py::test_golden_scenarios[trap_demo.yaml] PASSED                                             [ 81%]
+tests/test_simulator.py::test_golden_scenarios[vector_benchmark.yaml] PASSED                                      [ 90%]
+tests/test_simulator.py::test_golden_scenarios[vector_demo.yaml] PASSED                                           [100%]
 
-`11 passed in 12.78s`
+============================================== 11 passed in 12.13s =====================================================
+```
 
 ---
