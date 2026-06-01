@@ -388,7 +388,7 @@ class ControlUnit:
 
         self.dp.registers[reg_d] = self.dp.pop()
         self.dp.registers[Register.PC] += 4
-        self.tick()
+        self.tick(2)
 
     def _execute_cmp(self, mode: int, reg_d: int, reg_s: int, pc: int) -> None:
         """Выполняет сравнение двух значений с помощью вычитания (CMP).
@@ -452,7 +452,7 @@ class ControlUnit:
         target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
         self.dp.push(pc + 8)
         self.dp.registers[Register.PC] = target
-        self.tick(2)
+        self.tick(3)
 
     def _execute_ret(self, _mode: int, _reg_d: int, _reg_s: int, _pc: int) -> None:
         """Выполняет возврат из подпрограммы (RET).
@@ -471,7 +471,7 @@ class ControlUnit:
         self.dp.registers[Register.SR] = self.dp.pop()
         self.dp.registers[Register.PC] = self.dp.pop()
         self.in_interrupt = False
-        self.tick(2)
+        self.tick(3)
 
     def _execute_int(self, _mode: int, _reg_d: int, _reg_s: int, pc: int) -> None:
         """Выполняет программное прерывание / системный вызов (INT).
@@ -505,6 +505,7 @@ class ControlUnit:
 
         v_reg = reg_d - 8
         addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        self.tick()  # Выборка Payload
         for i in range(VECTOR_SIZE):
             self.dp.vector_registers[v_reg][i] = self.dp.read_data(addr + i)
             self.tick()
@@ -515,6 +516,7 @@ class ControlUnit:
 
         v_reg = reg_s - 8
         addr = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
+        self.tick()  # Выборка Payload
         for i in range(VECTOR_SIZE):
             self.dp.write_data(addr + i, self.dp.vector_registers[v_reg][i])
             self.tick()

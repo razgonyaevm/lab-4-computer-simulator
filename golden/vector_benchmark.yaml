@@ -306,7 +306,7 @@ log_journal: |
   SYSTEM PRINT INT: 1
   SYSTEM PRINT STRING:  
   SYSTEM PRINT INT: 0
-  Finished at tick 547
+  Finished at tick 571
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
      [0000]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 100
