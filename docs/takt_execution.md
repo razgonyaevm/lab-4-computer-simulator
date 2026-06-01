@@ -42,7 +42,7 @@
 * **`IM.addr`, `IM.out`** - адресный вход и выход данных ПЗУ команд (Instruction Memory).
 * **`DM.addr`, `DM.data_in`, `DM.out`** - входы адреса/данных и выход ОЗУ данных (Data Memory).
 * **`IR`, `PR`** - регистр команды Instruction Register и регистр полезной нагрузки Payload Register (внутри CU).
-* **`Rd_Out`, `Rs_Out`, `SP_Out`, `FP_Out`, `SR_Out`** - выходы скалярного регистрового файла RF.
+* **`Rd_Out`, `Rs_Out`, `SP_Out`, `SR_Out`** - выходы скалярного регистрового файла RF.
 * **`Vd_Out`, `Vs_Out`** - последовательные 32-битные выходы элементов векторного файла VRF.
 * **`ALU_Left`, `ALU_Right`** - входы скалярного ALU.
 * **`ALU_Out`, `Vector_ALU_Out`** - выходы результатов скалярного и векторного ALU.
