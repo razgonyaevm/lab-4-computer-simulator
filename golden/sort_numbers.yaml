@@ -293,7 +293,7 @@ log_journal: |
   SYSTEM PRINT STRING:  
   SYSTEM PRINT INT: 100
   SYSTEM PRINT STRING:  
-  Finished at tick 4055
+  Finished at tick 4218
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
      [0000]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 608              | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))

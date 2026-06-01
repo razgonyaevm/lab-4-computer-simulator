@@ -187,7 +187,7 @@ log_journal: |
   SYSTEM PRINT STRING:  
   SYSTEM PRINT INT: 57
   SYSTEM PRINT STRING:  
-  Finished at tick 3800
+  Finished at tick 3943
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
      [0000]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin

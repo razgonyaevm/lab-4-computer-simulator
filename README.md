@@ -668,7 +668,7 @@
 |            |             | `INDIRECT`       | 3     | Косвенное чтение из стека по адресу `[Rs + offset]` в регистр `Rd`: <br> $Rd \leftarrow M[Rs + offset]$                                                  |
 | **STORE**  | `0x03`      | `DIRECT`         | 3     | Прямая запись регистра `Rs` в ячейку ОЗУ по адресу `[Payload]`: <br> $M[Payload] \leftarrow Rs$                                                          |
 |            |             | `INDIRECT`       | 3     | Косвенная запись регистра `Rs` в стек по адресу `[Rd + offset]`: <br> $M[Rd + offset] \leftarrow Rs$                                                     |
-| **PUSH**   | `0x04`      | `REGISTER`       | 2     | Запись `Rs` на стек: `SP = SP - 4`, $M[SP] \leftarrow Rs$                                                                                                |
+| **PUSH**   | `0x04`      | `REGISTER`       | 3     | Запись `Rs` на стек: `SP = SP - 4`, $M[SP] \leftarrow Rs$                                                                                                |
 | **POP**    | `0x05`      | `REGISTER`       | 3     | Извлечение со стека в `Rd`: $Rd \leftarrow M[SP]$, `SP = SP + 4`                                                                                         |
 | **ADD**    | `0x10`      | `IMMEDIATE`      | 3     | Сложение `Rd` с константой: $Rd \leftarrow (Rd + Payload) \pmod{2^{32}}$                                                                                 |
 |            |             | `REGISTER`       | 2     | Регистровое сложение: $Rd \leftarrow (Rd + Rs) \pmod{2^{32}}$                                                                                            |
@@ -688,7 +688,7 @@
 | **JZ**     | `0x31`      | `IMMEDIATE`      | 3     | Переход по адресу Payload, если флаг Zero `ZF == 1`                                                                                                      |
 | **JNZ**    | `0x32`      | `IMMEDIATE`      | 3     | Переход по адресу Payload, если флаг Zero `ZF == 0`                                                                                                      |
 | **JL**     | `0x35`      | `IMMEDIATE`      | 3     | Переход по адресу Payload, если флаг Negative `NF == 1`                                                                                                  |
-| **CALL**   | `0x33`      | `IMMEDIATE`      | 4     | Вызов функции: сохранение PC на стек и переход на Payload: <br> $M[SP-4] \leftarrow PC+8$, `SP = SP - 4`, $PC \leftarrow Payload$                        |
+| **CALL**   | `0x33`      | `IMMEDIATE`      | 5     | Вызов функции: сохранение PC на стек и переход на Payload: <br> $M[SP-4] \leftarrow PC+8$, `SP = SP - 4`, $PC \leftarrow Payload$                        |
 | **RET**    | `0x34`      | `REGISTER`       | 3     | Возврат из подпрограммы: восстановление PC со стека                                                                                                      |
 | **INT**    | `0x40`      | `IMMEDIATE`      | 3     | Программное прерывание (системный вызов): <br> `INT 1` - вывод числа из R0; <br> `INT 2` - вывод нуль-терминированной строки из ОЗУ по адресу в R0       |
 | **IRET**   | `0x41`      | `REGISTER`       | 4     | Выход из обработчика прерывания: восстановление флагов `SR` и счетчика команд `PC` со стека                                                              |

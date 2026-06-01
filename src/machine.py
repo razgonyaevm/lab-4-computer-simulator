@@ -196,7 +196,7 @@ class ControlUnit:
                         # Переходим на вектор прерывания
                         self.in_interrupt = True
                         self.dp.registers[Register.PC] = self.intr_vector  # Переход к обработчику
-                        self.tick(3)  # Такты на переход и сохранение контекста
+                        self.tick(5)  # Такты на переход и сохранение контекста
 
     def decode_and_execute(self) -> None:
         """Основной цикл одной CISC-инструкции.
@@ -381,7 +381,7 @@ class ControlUnit:
 
         self.dp.push(self.dp.registers[reg_s])
         self.dp.registers[Register.PC] += 4
-        self.tick()
+        self.tick(2)
 
     def _execute_pop(self, _mode: int, reg_d: int, _reg_s: int, _pc: int) -> None:
         """Извлекает значение с вершины аппаратного стека в целевой регистр (POP)."""
@@ -452,7 +452,7 @@ class ControlUnit:
         target = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
         self.dp.push(pc + 8)
         self.dp.registers[Register.PC] = target
-        self.tick(3)
+        self.tick(4)
 
     def _execute_ret(self, _mode: int, _reg_d: int, _reg_s: int, _pc: int) -> None:
         """Выполняет возврат из подпрограммы (RET).

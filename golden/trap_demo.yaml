@@ -34,9 +34,9 @@ expected_stdout: "Simulation finished. Output: Yes"
 
 log_journal: |
   TICK:    1 | PC:   0 | Instruction: JMP (Mode: IMMEDIATE)
-  LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
-  SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-  VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+    LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   TICK:    4 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
     LISP SOURCE : 1
@@ -84,193 +84,269 @@ log_journal: |
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   --- TRAP: Interrupt Triggered at tick 30! Input value: Y ---
-  TICK:   34 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
+  TICK:   36 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   36 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
+  TICK:   39 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   38 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
+  TICK:   42 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   >>> INPUT Read: 89 ('Y')
-  TICK:   41 | PC:  24 | Instruction: STORE (Mode: DIRECT)
+  TICK:   45 | PC:  24 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:89, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   44 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
+  TICK:   48 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:89, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   47 | PC:  40 | Instruction: STORE (Mode: DIRECT)
+  TICK:   51 | PC:  40 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:89, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   <<< OUTPUT Write: 89 ('Y')
-  TICK:   50 | PC:  48 | Instruction: POP (Mode: REGISTER)
+  TICK:   54 | PC:  48 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:89, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   53 | PC:  52 | Instruction: POP (Mode: REGISTER)
+  TICK:   57 | PC:  52 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:89, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   56 | PC:  56 | Instruction: IRET (Mode: REGISTER)
+  TICK:   60 | PC:  56 | Instruction: IRET (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   60 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
-    LISP SOURCE : 0
-    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
-  --------------------------------------------------------------------------------
-  --- TRAP: Interrupt Triggered at tick 62! Input value: e ---
-  TICK:   66 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
+  --- TRAP: Interrupt Triggered at tick 63! Input value: e ---
+  TICK:   69 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   68 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
+  TICK:   72 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   70 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
+  TICK:   75 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   >>> INPUT Read: 101 ('e')
-  TICK:   73 | PC:  24 | Instruction: STORE (Mode: DIRECT)
+  TICK:   78 | PC:  24 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:101, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   76 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
+  TICK:   81 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:101, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   79 | PC:  40 | Instruction: STORE (Mode: DIRECT)
+  TICK:   84 | PC:  40 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:101, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   <<< OUTPUT Write: 101 ('e')
-  TICK:   82 | PC:  48 | Instruction: POP (Mode: REGISTER)
+  TICK:   87 | PC:  48 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:101, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   85 | PC:  52 | Instruction: POP (Mode: REGISTER)
+  TICK:   90 | PC:  52 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:101, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   88 | PC:  56 | Instruction: IRET (Mode: REGISTER)
+  TICK:   93 | PC:  56 | Instruction: IRET (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  --- TRAP: Interrupt Triggered at tick 91! Input value: s ---
-  TICK:   95 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
+  --- TRAP: Interrupt Triggered at tick 96! Input value: s ---
+  TICK:  102 | PC:   8 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   97 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
+  TICK:  105 | PC:  12 | Instruction: PUSH (Mode: REGISTER)
     LISP SOURCE : (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:   99 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
+  TICK:  108 | PC:  16 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   >>> INPUT Read: 115 ('s')
-  TICK:  102 | PC:  24 | Instruction: STORE (Mode: DIRECT)
+  TICK:  111 | PC:  24 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : stdin
     SCALAR REGS : R0:115, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  105 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
+  TICK:  114 | PC:  32 | Instruction: LOAD (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:115, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  108 | PC:  40 | Instruction: STORE (Mode: DIRECT)
+  TICK:  117 | PC:  40 | Instruction: STORE (Mode: DIRECT)
     LISP SOURCE : input_val
     SCALAR REGS : R0:115, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
   <<< OUTPUT Write: 115 ('s')
-  TICK:  111 | PC:  48 | Instruction: POP (Mode: REGISTER)
+  TICK:  120 | PC:  48 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:115, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4076, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  114 | PC:  52 | Instruction: POP (Mode: REGISTER)
+  TICK:  123 | PC:  52 | Instruction: POP (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:115, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4080, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  117 | PC:  56 | Instruction: IRET (Mode: REGISTER)
+  TICK:  126 | PC:  56 | Instruction: IRET (Mode: REGISTER)
     LISP SOURCE : input_val
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4084, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  121 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
-    LISP SOURCE : 1
-    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
-  --------------------------------------------------------------------------------
-  TICK:  124 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
-    LISP SOURCE : 1
-    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
-  --------------------------------------------------------------------------------
-  TICK:  127 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
-    LISP SOURCE : 1
-    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
-  --------------------------------------------------------------------------------
-  TICK:  130 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
-    LISP SOURCE : 0
-    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
-    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
-  --------------------------------------------------------------------------------
-  TICK:  133 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
+  TICK:  130 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
     LISP SOURCE : 0
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  TICK:  136 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
+  TICK:  133 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
     LISP SOURCE : 1
     SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
     VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
   --------------------------------------------------------------------------------
-  --- TRAP: Interrupt Triggered at tick 30! Input value: Y ---
-  >>> INPUT Read: 89 ('Y')
-  <<< OUTPUT Write: 89 ('Y')
-  --- TRAP: Interrupt Triggered at tick 62! Input value: e ---
-  >>> INPUT Read: 101 ('e')
-  <<< OUTPUT Write: 101 ('e')
-  --- TRAP: Interrupt Triggered at tick 91! Input value: s ---
-  >>> INPUT Read: 115 ('s')
-  <<< OUTPUT Write: 115 ('s')
+  TICK:  136 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  139 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  142 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  145 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  148 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  151 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  154 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  157 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  160 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  163 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  166 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  169 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  172 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  175 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  178 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  181 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  184 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  187 | PC:  84 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  190 | PC:  92 | Instruction: JMP (Mode: IMMEDIATE)
+    LISP SOURCE : 0
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  193 | PC:  60 | Instruction: MOV (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:0, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  196 | PC:  68 | Instruction: CMP (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
+  TICK:  199 | PC:  76 | Instruction: JZ (Mode: IMMEDIATE)
+    LISP SOURCE : 1
+    SCALAR REGS : R0:1, R1:0, R2:0, R3:0, R4:0, R5:0, R6:0, R7:0, SP:4092, FP:4092, SR:0 (ZF=0, NF=0)
+    VECTOR REGS : V0:[0, 0, 0, 0], V1:[0, 0, 0, 0], V2:[0, 0, 0, 0], V3:[0, 0, 0, 0]
+  --------------------------------------------------------------------------------
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
      [0000]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 60               | (definterrupt interrupt_handler (begin (setq input_val stdin) (setq stdout input_val)))
@@ -292,7 +368,7 @@ log_journal: |
   --------------------------------------------------------------------------------
   DATA MEMORY (Used Non-Zero Words & Active Stack):
     [0000]: 115        's'    (STATIC/GLOBAL)
-    [4088]: 60         '<'    (STATIC/GLOBAL)
+    [4088]: 92         '\'    (STATIC/GLOBAL)
     [4092]: 0                 (STACK)
     [4093]: 0                 (STACK)
     [4094]: 0                 (STACK)

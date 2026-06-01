@@ -194,7 +194,7 @@ expected_stdout: "Simulation finished. Output: Largest Palindrome: 906609"
 log_journal: |
   SYSTEM PRINT STRING: Largest Palindrome: 
   SYSTEM PRINT INT: 906609
-  Finished at tick 3656241
+  Finished at tick 3897096
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
      [0000]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 304              | (defun reverse_num (n) (begin (setq rev 0) (while (< 0 n) (begin (setq d (- n (* 10 (/ n 10)))) (setq rev (+ (* rev 10) d)) (setq n (/ n 10)))) rev))
