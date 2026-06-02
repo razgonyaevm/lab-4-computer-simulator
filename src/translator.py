@@ -413,10 +413,25 @@ class Translator:
         """Транслирует базовые математические операции (+, -, *, /).
 
         Использует _translate_binary_operands и выполняет соответствующее вычисление в ALU.
+        Включает оптимизацию непосредственного сложения (ADD Rd, #imm) для
+        избежания накладных расходов стека при сложении с константой.
         """
 
         op = expr[0]
-        # Вычисляем операнды
+
+        # Оптимизация: если складываем с числовым литералом справа: (+ x 5)
+        if op == "+" and isinstance(expr[2], int):
+            self.translate_expression(expr[1], local_vars)  # Левый операнд в R0
+            self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.R0, 0, expr[2])
+            return
+
+        # Оптимизация: если складываем с числовым литералом слева: (+ 5 x)
+        if op == "+" and isinstance(expr[1], int):
+            self.translate_expression(expr[2], local_vars)  # Правый операнд в R0
+            self.add_instruction(OpCode.ADD, AddressingMode.IMMEDIATE, Register.R0, 0, expr[1])
+            return
+
+        # Вычисляем операнды для всех остальных случаев и будем вычислять через регистры
         self._translate_binary_operands(expr, local_vars)
         opcode_map = {"+": OpCode.ADD, "-": OpCode.SUB, "*": OpCode.MUL, "/": OpCode.DIV}
         self.add_instruction(opcode_map[op], AddressingMode.REGISTER, Register.R0, Register.R1)
