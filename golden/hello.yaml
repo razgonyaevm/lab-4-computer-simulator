@@ -31,9 +31,9 @@ log_journal: |
   Finished at tick 7
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
-     [0000]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | Hello, World!
-     [0008]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                | Hello, World!
-     [0016]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | Hello, World!
+     [0000]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | Hello, World!
+     [0008]: INT    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 2                | Hello, World!
+     [0016]: HALT   Mode:REGISTER  Rd:R0 Rs:R0                           | Hello, World!
   --------------------------------------------------------------------------------
   DATA MEMORY (Used Non-Zero Words & Active Stack):
     [0000]: 72         'H'    (STATIC/GLOBAL)
@@ -53,3 +53,4 @@ log_journal: |
     [4093]: 0                 (STACK)
     [4094]: 0                 (STACK)
     [4095]: 0                 (STACK)
+  ================================================================================

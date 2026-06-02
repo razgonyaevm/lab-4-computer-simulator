@@ -116,17 +116,17 @@ log_journal: |
   Finished at tick 1073
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
-     [0000]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
-     [0008]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | stdin
-     [0016]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | char
-     [0024]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | char
-     [0032]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 80               | char
-     [0040]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | char
-     [0048]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 65281            | char
-     [0056]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
-     [0064]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | stdin
-     [0072]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 16               | stdin
-     [0080]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | stdin
+     [0000]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65280            | stdin
+     [0008]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | stdin
+     [0016]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | char
+     [0024]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | char
+     [0032]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 80               | char
+     [0040]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | char
+     [0048]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65281            | char
+     [0056]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65280            | stdin
+     [0064]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | stdin
+     [0072]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 16               | stdin
+     [0080]: HALT   Mode:REGISTER  Rd:R0 Rs:R0                           | stdin
   --------------------------------------------------------------------------------
   DATA MEMORY (Used Non-Zero Words & Active Stack):
     [4092]: 0                 (STACK)

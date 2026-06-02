@@ -140,7 +140,7 @@ disassembly: |
   632 - 0303000003000000 - store [3], r0
   640 - 0203000002000000 - load r0, [2]
   648 - 1402000000000000 - cmp r0, #0
-  656 - 31020000f8020000 - jz 760
+  656 - 31020000ec020000 - jz 748
   664 - 0203000002000000 - load r0, [2]
   672 - 04010000 - push r0
   676 - 0203000003000000 - load r0, [3]
@@ -148,119 +148,104 @@ disassembly: |
   688 - 05010000 - pop r0
   692 - 0304010000000000 - store [r1 + 0], r0
   700 - 0203000003000000 - load r0, [3]
-  708 - 04010000 - push r0
-  712 - 0102000001000000 - mov r0, #1
-  720 - 05010100 - pop r1
-  724 - 10010001 - add r0, r1
-  728 - 0303000003000000 - store [3], r0
-  736 - 3302000008000000 - call 8
-  744 - 0303000002000000 - store [2], r0
-  752 - 3002000080020000 - jmp 640
-  760 - 0203000003000000 - load r0, [3]
-  768 - 0303000004000000 - store [4], r0
-  776 - 0102000064000000 - mov r0, #100
-  784 - 0303000005000000 - store [5], r0
-  792 - 0203000005000000 - load r0, [5]
-  800 - 04010000 - push r0
-  804 - 0203000004000000 - load r0, [4]
-  812 - 05010100 - pop r1
-  816 - 14010100 - cmp r1, r0
-  820 - 350200004c030000 - jl 844
-  828 - 0102000000000000 - mov r0, #0
-  836 - 3002000054030000 - jmp 852
-  844 - 0102000001000000 - mov r0, #1
-  852 - 1402000000000000 - cmp r0, #0
-  860 - 3102000010050000 - jz 1296
-  868 - 0203000005000000 - load r0, [5]
-  876 - 04010000 - push r0
-  880 - 0102000001000000 - mov r0, #1
-  888 - 05010100 - pop r1
-  892 - 10010001 - add r0, r1
-  896 - 0303000006000000 - store [6], r0
-  904 - 0203000006000000 - load r0, [6]
-  912 - 04010000 - push r0
-  916 - 0203000004000000 - load r0, [4]
-  924 - 05010100 - pop r1
-  928 - 14010100 - cmp r1, r0
-  932 - 35020000bc030000 - jl 956
-  940 - 0102000000000000 - mov r0, #0
-  948 - 30020000c4030000 - jmp 964
-  956 - 0102000001000000 - mov r0, #1
-  964 - 1402000000000000 - cmp r0, #0
-  972 - 31020000e4040000 - jz 1252
-  980 - 0203000005000000 - load r0, [5]
+  708 - 1002000001000000 - add r0, #1
+  716 - 0303000003000000 - store [3], r0
+  724 - 3302000008000000 - call 8
+  732 - 0303000002000000 - store [2], r0
+  740 - 3002000080020000 - jmp 640
+  748 - 0203000003000000 - load r0, [3]
+  756 - 0303000004000000 - store [4], r0
+  764 - 0102000064000000 - mov r0, #100
+  772 - 0303000005000000 - store [5], r0
+  780 - 0203000005000000 - load r0, [5]
+  788 - 04010000 - push r0
+  792 - 0203000004000000 - load r0, [4]
+  800 - 05010100 - pop r1
+  804 - 14010100 - cmp r1, r0
+  808 - 3502000040030000 - jl 832
+  816 - 0102000000000000 - mov r0, #0
+  824 - 3002000048030000 - jmp 840
+  832 - 0102000001000000 - mov r0, #1
+  840 - 1402000000000000 - cmp r0, #0
+  848 - 31020000e0040000 - jz 1248
+  856 - 0203000005000000 - load r0, [5]
+  864 - 1002000001000000 - add r0, #1
+  872 - 0303000006000000 - store [6], r0
+  880 - 0203000006000000 - load r0, [6]
+  888 - 04010000 - push r0
+  892 - 0203000004000000 - load r0, [4]
+  900 - 05010100 - pop r1
+  904 - 14010100 - cmp r1, r0
+  908 - 35020000a4030000 - jl 932
+  916 - 0102000000000000 - mov r0, #0
+  924 - 30020000ac030000 - jmp 940
+  932 - 0102000001000000 - mov r0, #1
+  940 - 1402000000000000 - cmp r0, #0
+  948 - 31020000c0040000 - jz 1216
+  956 - 0203000005000000 - load r0, [5]
+  964 - 0204000000000000 - load r0, [r0 + 0]
+  972 - 0303000007000000 - store [7], r0
+  980 - 0203000006000000 - load r0, [6]
   988 - 0204000000000000 - load r0, [r0 + 0]
-  996 - 0303000007000000 - store [7], r0
-  1004 - 0203000006000000 - load r0, [6]
-  1012 - 0204000000000000 - load r0, [r0 + 0]
-  1020 - 0303000008000000 - store [8], r0
-  1028 - 0203000008000000 - load r0, [8]
-  1036 - 04010000 - push r0
-  1040 - 0203000007000000 - load r0, [7]
-  1048 - 05010100 - pop r1
-  1052 - 14010100 - cmp r1, r0
-  1056 - 3502000038040000 - jl 1080
-  1064 - 0102000000000000 - mov r0, #0
-  1072 - 3002000040040000 - jmp 1088
-  1080 - 0102000001000000 - mov r0, #1
-  1088 - 1402000000000000 - cmp r0, #0
-  1096 - 31020000b0040000 - jz 1200
-  1104 - 0203000008000000 - load r0, [8]
-  1112 - 04010000 - push r0
-  1116 - 0203000005000000 - load r0, [5]
-  1124 - 01010100 - mov r1, r0
-  1128 - 05010000 - pop r0
-  1132 - 0304010000000000 - store [r1 + 0], r0
-  1140 - 0203000007000000 - load r0, [7]
-  1148 - 04010000 - push r0
-  1152 - 0203000006000000 - load r0, [6]
-  1160 - 01010100 - mov r1, r0
-  1164 - 05010000 - pop r0
-  1168 - 0304010000000000 - store [r1 + 0], r0
-  1176 - 0203000008000000 - load r0, [8]
-  1184 - 0303000007000000 - store [7], r0
-  1192 - 30020000b8040000 - jmp 1208
-  1200 - 0102000000000000 - mov r0, #0
-  1208 - 0203000006000000 - load r0, [6]
-  1216 - 04010000 - push r0
-  1220 - 0102000001000000 - mov r0, #1
-  1228 - 05010100 - pop r1
-  1232 - 10010001 - add r0, r1
-  1236 - 0303000006000000 - store [6], r0
-  1244 - 3002000088030000 - jmp 904
-  1252 - 0203000005000000 - load r0, [5]
-  1260 - 04010000 - push r0
-  1264 - 0102000001000000 - mov r0, #1
-  1272 - 05010100 - pop r1
-  1276 - 10010001 - add r0, r1
-  1280 - 0303000005000000 - store [5], r0
-  1288 - 3002000018030000 - jmp 792
-  1296 - 0102000064000000 - mov r0, #100
-  1304 - 0303000005000000 - store [5], r0
-  1312 - 0203000005000000 - load r0, [5]
-  1320 - 04010000 - push r0
-  1324 - 0203000004000000 - load r0, [4]
-  1332 - 05010100 - pop r1
-  1336 - 14010100 - cmp r1, r0
-  1340 - 3502000054050000 - jl 1364
-  1348 - 0102000000000000 - mov r0, #0
-  1356 - 300200005c050000 - jmp 1372
-  1364 - 0102000001000000 - mov r0, #1
-  1372 - 1402000000000000 - cmp r0, #0
-  1380 - 31020000c0050000 - jz 1472
-  1388 - 0203000005000000 - load r0, [5]
-  1396 - 0204000000000000 - load r0, [r0 + 0]
-  1404 - 4002000001000000 - int r0, #1
-  1412 - 0102000009000000 - mov r0, #9
-  1420 - 4002000002000000 - int r0, #2
-  1428 - 0203000005000000 - load r0, [5]
-  1436 - 04010000 - push r0
-  1440 - 0102000001000000 - mov r0, #1
-  1448 - 05010100 - pop r1
-  1452 - 10010001 - add r0, r1
-  1456 - 0303000005000000 - store [5], r0
-  1464 - 3002000020050000 - jmp 1312
-  1472 - ff010000 - halt
+  996 - 0303000008000000 - store [8], r0
+  1004 - 0203000008000000 - load r0, [8]
+  1012 - 04010000 - push r0
+  1016 - 0203000007000000 - load r0, [7]
+  1024 - 05010100 - pop r1
+  1028 - 14010100 - cmp r1, r0
+  1032 - 3502000020040000 - jl 1056
+  1040 - 0102000000000000 - mov r0, #0
+  1048 - 3002000028040000 - jmp 1064
+  1056 - 0102000001000000 - mov r0, #1
+  1064 - 1402000000000000 - cmp r0, #0
+  1072 - 3102000098040000 - jz 1176
+  1080 - 0203000008000000 - load r0, [8]
+  1088 - 04010000 - push r0
+  1092 - 0203000005000000 - load r0, [5]
+  1100 - 01010100 - mov r1, r0
+  1104 - 05010000 - pop r0
+  1108 - 0304010000000000 - store [r1 + 0], r0
+  1116 - 0203000007000000 - load r0, [7]
+  1124 - 04010000 - push r0
+  1128 - 0203000006000000 - load r0, [6]
+  1136 - 01010100 - mov r1, r0
+  1140 - 05010000 - pop r0
+  1144 - 0304010000000000 - store [r1 + 0], r0
+  1152 - 0203000008000000 - load r0, [8]
+  1160 - 0303000007000000 - store [7], r0
+  1168 - 30020000a0040000 - jmp 1184
+  1176 - 0102000000000000 - mov r0, #0
+  1184 - 0203000006000000 - load r0, [6]
+  1192 - 1002000001000000 - add r0, #1
+  1200 - 0303000006000000 - store [6], r0
+  1208 - 3002000070030000 - jmp 880
+  1216 - 0203000005000000 - load r0, [5]
+  1224 - 1002000001000000 - add r0, #1
+  1232 - 0303000005000000 - store [5], r0
+  1240 - 300200000c030000 - jmp 780
+  1248 - 0102000064000000 - mov r0, #100
+  1256 - 0303000005000000 - store [5], r0
+  1264 - 0203000005000000 - load r0, [5]
+  1272 - 04010000 - push r0
+  1276 - 0203000004000000 - load r0, [4]
+  1284 - 05010100 - pop r1
+  1288 - 14010100 - cmp r1, r0
+  1292 - 3502000024050000 - jl 1316
+  1300 - 0102000000000000 - mov r0, #0
+  1308 - 300200002c050000 - jmp 1324
+  1316 - 0102000001000000 - mov r0, #1
+  1324 - 1402000000000000 - cmp r0, #0
+  1332 - 3102000084050000 - jz 1412
+  1340 - 0203000005000000 - load r0, [5]
+  1348 - 0204000000000000 - load r0, [r0 + 0]
+  1356 - 4002000001000000 - int r0, #1
+  1364 - 0102000009000000 - mov r0, #9
+  1372 - 4002000002000000 - int r0, #2
+  1380 - 0203000005000000 - load r0, [5]
+  1388 - 1002000001000000 - add r0, #1
+  1396 - 0303000005000000 - store [5], r0
+  1404 - 30020000f0040000 - jmp 1264
+  1412 - ff010000 - halt
 
 input: "95 21 100 8 3"
 schedule: ""
@@ -293,225 +278,210 @@ log_journal: |
   SYSTEM PRINT STRING:  
   SYSTEM PRINT INT: 100
   SYSTEM PRINT STRING:  
-  Finished at tick 4218
+  Finished at tick 3978
   HARVARD MEMORY DUMP
   INSTRUCTION MEMORY (Code Section):
-     [0000]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 608              | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
-     [0008]: PUSH   Mode:REGISTER  Rd:0  Rs:14                           | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
-     [0012]: MOV    Mode:REGISTER  Rd:14 Rs:13                           | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
-     [0016]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0024]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | 0
-     [0032]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
-     [0040]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | stdin
-     [0048]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | c
-     [0056]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | c
-     [0060]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 32               | 32
-     [0068]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 32
-     [0072]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | 32
-     [0076]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 32
-     [0084]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 32
-     [0092]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 108              | 32
-     [0100]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 32
-     [0108]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 32
-     [0116]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 140              | 32
-     [0124]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [0132]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 240              | 1
-     [0140]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | c
-     [0148]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | c
-     [0152]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 10               | 10
-     [0160]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 10
-     [0164]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | 10
-     [0168]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 192              | 10
-     [0176]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 10
-     [0184]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 200              | 10
-     [0192]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 10
-     [0200]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 10
-     [0208]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 232              | 10
-     [0216]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [0224]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 240              | 1
-     [0232]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0240]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0248]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 280              | 0
-     [0256]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
-     [0264]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | stdin
-     [0272]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 48               | stdin
-     [0280]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | c
-     [0288]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | c
-     [0292]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 48               | 48
-     [0300]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 48
-     [0304]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | 48
-     [0308]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 332              | 48
-     [0316]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 48
-     [0324]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 340              | 48
-     [0332]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 48
-     [0340]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 48
-     [0348]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 372              | 48
-     [0356]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0364]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 472              | 0
-     [0372]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | c
-     [0380]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | c
-     [0384]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 58               | 58
-     [0392]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 58
-     [0396]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | 58
-     [0400]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 424              | 58
-     [0408]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 58
-     [0416]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 432              | 58
-     [0424]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 58
-     [0432]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 58
-     [0440]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 464              | 58
-     [0448]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [0456]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 472              | 1
-     [0464]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0472]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [0480]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 588              | 0
-     [0488]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | val
-     [0496]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | val
-     [0500]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 10               | 10
-     [0508]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 10
-     [0512]: MUL    Mode:REGISTER  Rd:0  Rs:1                            | 10
-     [0516]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | 10
-     [0520]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | c
-     [0528]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | c
-     [0532]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 48               | 48
-     [0540]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 48
-     [0544]: SUB    Mode:REGISTER  Rd:0  Rs:1                            | 48
-     [0548]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 48
-     [0552]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 48
-     [0556]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | 48
-     [0564]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 65280            | stdin
-     [0572]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 1                | stdin
-     [0580]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 280              | stdin
-     [0588]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 0                | val
-     [0596]: MOV    Mode:REGISTER  Rd:13 Rs:14                           | val
-     [0600]: POP    Mode:REGISTER  Rd:14 Rs:0                            | val
-     [0604]: RET    Mode:REGISTER  Rd:0  Rs:0                            | val
-     [0608]: CALL   Mode:IMMEDIATE Rd:0  Rs:0  Payload: 8                | (read-int)
-     [0616]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 2                | (read-int)
-     [0624]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 100
-     [0632]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 3                | 100
-     [0640]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 2                | num
-     [0648]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | num
-     [0656]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 760              | num
-     [0664]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 2                | num
-     [0672]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | num
-     [0676]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 3                | addr
-     [0684]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | addr
-     [0688]: POP    Mode:REGISTER  Rd:0  Rs:0                            | addr
-     [0692]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | addr
-     [0700]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 3                | addr
-     [0708]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | addr
-     [0712]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [0720]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 1
-     [0724]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 1
-     [0728]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 3                | 1
-     [0736]: CALL   Mode:IMMEDIATE Rd:0  Rs:0  Payload: 8                | (read-int)
-     [0744]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 2                | (read-int)
-     [0752]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 640              | (read-int)
-     [0760]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 3                | addr
-     [0768]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 4                | addr
-     [0776]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 100
-     [0784]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | 100
-     [0792]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [0800]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | i
-     [0804]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 4                | end_addr
-     [0812]: POP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [0816]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [0820]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 844              | end_addr
-     [0828]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [0836]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 852              | end_addr
-     [0844]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | end_addr
-     [0852]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [0860]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1296             | end_addr
-     [0868]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [0876]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | i
-     [0880]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [0888]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 1
-     [0892]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 1
-     [0896]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | 1
-     [0904]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | j
-     [0912]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | j
-     [0916]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 4                | end_addr
-     [0924]: POP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [0928]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [0932]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 956              | end_addr
-     [0940]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [0948]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 964              | end_addr
-     [0956]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | end_addr
-     [0964]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [0972]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1252             | end_addr
-     [0980]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [0988]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | i
-     [0996]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 7                | i
-     [1004]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | j
-     [1012]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | j
-     [1020]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 8                | j
-     [1028]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 8                | val_j
-     [1036]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | val_j
-     [1040]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 7                | val_i
-     [1048]: POP    Mode:REGISTER  Rd:1  Rs:0                            | val_i
-     [1052]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | val_i
-     [1056]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1080             | val_i
-     [1064]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | val_i
-     [1072]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1088             | val_i
-     [1080]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | val_i
-     [1088]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | val_i
-     [1096]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1200             | val_i
-     [1104]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 8                | val_j
-     [1112]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | val_j
-     [1116]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [1124]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | i
-     [1128]: POP    Mode:REGISTER  Rd:0  Rs:0                            | i
-     [1132]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | i
-     [1140]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 7                | val_i
-     [1148]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | val_i
-     [1152]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | j
-     [1160]: MOV    Mode:REGISTER  Rd:1  Rs:0                            | j
-     [1164]: POP    Mode:REGISTER  Rd:0  Rs:0                            | j
-     [1168]: STORE  Mode:INDIRECT  Rd:1  Rs:0  Payload: 0                | j
-     [1176]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 8                | val_j
-     [1184]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 7                | val_j
-     [1192]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1208             | val_j
-     [1200]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | 0
-     [1208]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | j
-     [1216]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | j
-     [1220]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [1228]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 1
-     [1232]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 1
-     [1236]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 6                | 1
-     [1244]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 904              | 1
-     [1252]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [1260]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | i
-     [1264]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [1272]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 1
-     [1276]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 1
-     [1280]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | 1
-     [1288]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 792              | 1
-     [1296]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 100              | 100
-     [1304]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | 100
-     [1312]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [1320]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | i
-     [1324]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 4                | end_addr
-     [1332]: POP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [1336]: CMP    Mode:REGISTER  Rd:1  Rs:0                            | end_addr
-     [1340]: JL     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1364             | end_addr
-     [1348]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [1356]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1372             | end_addr
-     [1364]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | end_addr
-     [1372]: CMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 0                | end_addr
-     [1380]: JZ     Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1472             | end_addr
-     [1388]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [1396]: LOAD   Mode:INDIRECT  Rd:0  Rs:0  Payload: 0                | i
-     [1404]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | i
-     [1412]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 9                |  
-     [1420]: INT    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 2                |  
-     [1428]: LOAD   Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | i
-     [1436]: PUSH   Mode:REGISTER  Rd:0  Rs:0                            | i
-     [1440]: MOV    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1                | 1
-     [1448]: POP    Mode:REGISTER  Rd:1  Rs:0                            | 1
-     [1452]: ADD    Mode:REGISTER  Rd:0  Rs:1                            | 1
-     [1456]: STORE  Mode:DIRECT    Rd:0  Rs:0  Payload: 5                | 1
-     [1464]: JMP    Mode:IMMEDIATE Rd:0  Rs:0  Payload: 1312             | 1
-     [1472]: HALT   Mode:REGISTER  Rd:0  Rs:0                            | 1
+     [0000]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 608              | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
+     [0008]: PUSH   Mode:REGISTER  Rd:R0 Rs:FP                           | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
+     [0012]: MOV    Mode:REGISTER  Rd:FP Rs:SP                           | (defun read-int () (begin (setq val 0) (setq c stdin) (while (if (= c 32) 1 (if (= c 10) 1 0)) (setq c stdin)) (while (if (< c 48) 0 (if (< c 58) 1 0)) (begin (setq val (+ (* val 10) (- c 48))) (setq c stdin))) val))
+     [0016]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0024]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | 0
+     [0032]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65280            | stdin
+     [0040]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | stdin
+     [0048]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | c
+     [0056]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | c
+     [0060]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 32               | 32
+     [0068]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 32
+     [0072]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | 32
+     [0076]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 100              | 32
+     [0084]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 32
+     [0092]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 108              | 32
+     [0100]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 32
+     [0108]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 32
+     [0116]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 140              | 32
+     [0124]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 1
+     [0132]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 240              | 1
+     [0140]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | c
+     [0148]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | c
+     [0152]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 10               | 10
+     [0160]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 10
+     [0164]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | 10
+     [0168]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 192              | 10
+     [0176]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 10
+     [0184]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 200              | 10
+     [0192]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 10
+     [0200]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 10
+     [0208]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 232              | 10
+     [0216]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 1
+     [0224]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 240              | 1
+     [0232]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0240]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0248]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 280              | 0
+     [0256]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65280            | stdin
+     [0264]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | stdin
+     [0272]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 48               | stdin
+     [0280]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | c
+     [0288]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | c
+     [0292]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 48               | 48
+     [0300]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 48
+     [0304]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | 48
+     [0308]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 332              | 48
+     [0316]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 48
+     [0324]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 340              | 48
+     [0332]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 48
+     [0340]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 48
+     [0348]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 372              | 48
+     [0356]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0364]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 472              | 0
+     [0372]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | c
+     [0380]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | c
+     [0384]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 58               | 58
+     [0392]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 58
+     [0396]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | 58
+     [0400]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 424              | 58
+     [0408]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 58
+     [0416]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 432              | 58
+     [0424]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 58
+     [0432]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 58
+     [0440]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 464              | 58
+     [0448]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | 1
+     [0456]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 472              | 1
+     [0464]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0472]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [0480]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 588              | 0
+     [0488]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | val
+     [0496]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | val
+     [0500]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 10               | 10
+     [0508]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 10
+     [0512]: MUL    Mode:REGISTER  Rd:R0 Rs:R1                           | 10
+     [0516]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | 10
+     [0520]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | c
+     [0528]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | c
+     [0532]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 48               | 48
+     [0540]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 48
+     [0544]: SUB    Mode:REGISTER  Rd:R0 Rs:R1                           | 48
+     [0548]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | 48
+     [0552]: ADD    Mode:REGISTER  Rd:R0 Rs:R1                           | 48
+     [0556]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | 48
+     [0564]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 65280            | stdin
+     [0572]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 1                | stdin
+     [0580]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 280              | stdin
+     [0588]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 0                | val
+     [0596]: MOV    Mode:REGISTER  Rd:SP Rs:FP                           | val
+     [0600]: POP    Mode:REGISTER  Rd:FP Rs:R0                           | val
+     [0604]: RET    Mode:REGISTER  Rd:R0 Rs:R0                           | val
+     [0608]: CALL   Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 8                | (read-int)
+     [0616]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 2                | (read-int)
+     [0624]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 100              | 100
+     [0632]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 3                | 100
+     [0640]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 2                | num
+     [0648]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | num
+     [0656]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 748              | num
+     [0664]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 2                | num
+     [0672]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | num
+     [0676]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 3                | addr
+     [0684]: MOV    Mode:REGISTER  Rd:R1 Rs:R0                           | addr
+     [0688]: POP    Mode:REGISTER  Rd:R0 Rs:R0                           | addr
+     [0692]: STORE  Mode:INDIRECT  Rd:R1 Rs:R0 Payload: 0                | addr
+     [0700]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 3                | addr
+     [0708]: ADD    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | addr
+     [0716]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 3                | addr
+     [0724]: CALL   Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 8                | (read-int)
+     [0732]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 2                | (read-int)
+     [0740]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 640              | (read-int)
+     [0748]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 3                | addr
+     [0756]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 4                | addr
+     [0764]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 100              | 100
+     [0772]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | 100
+     [0780]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [0788]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | i
+     [0792]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 4                | end_addr
+     [0800]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [0804]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [0808]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 832              | end_addr
+     [0816]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [0824]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 840              | end_addr
+     [0832]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | end_addr
+     [0840]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [0848]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1248             | end_addr
+     [0856]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [0864]: ADD    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | i
+     [0872]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | i
+     [0880]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | j
+     [0888]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | j
+     [0892]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 4                | end_addr
+     [0900]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [0904]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [0908]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 932              | end_addr
+     [0916]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [0924]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 940              | end_addr
+     [0932]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | end_addr
+     [0940]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [0948]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1216             | end_addr
+     [0956]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [0964]: LOAD   Mode:INDIRECT  Rd:R0 Rs:R0 Payload: 0                | i
+     [0972]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 7                | i
+     [0980]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | j
+     [0988]: LOAD   Mode:INDIRECT  Rd:R0 Rs:R0 Payload: 0                | j
+     [0996]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 8                | j
+     [1004]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 8                | val_j
+     [1012]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | val_j
+     [1016]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 7                | val_i
+     [1024]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | val_i
+     [1028]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | val_i
+     [1032]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1056             | val_i
+     [1040]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | val_i
+     [1048]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1064             | val_i
+     [1056]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | val_i
+     [1064]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | val_i
+     [1072]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1176             | val_i
+     [1080]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 8                | val_j
+     [1088]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | val_j
+     [1092]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1100]: MOV    Mode:REGISTER  Rd:R1 Rs:R0                           | i
+     [1104]: POP    Mode:REGISTER  Rd:R0 Rs:R0                           | i
+     [1108]: STORE  Mode:INDIRECT  Rd:R1 Rs:R0 Payload: 0                | i
+     [1116]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 7                | val_i
+     [1124]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | val_i
+     [1128]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | j
+     [1136]: MOV    Mode:REGISTER  Rd:R1 Rs:R0                           | j
+     [1140]: POP    Mode:REGISTER  Rd:R0 Rs:R0                           | j
+     [1144]: STORE  Mode:INDIRECT  Rd:R1 Rs:R0 Payload: 0                | j
+     [1152]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 8                | val_j
+     [1160]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 7                | val_j
+     [1168]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1184             | val_j
+     [1176]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | 0
+     [1184]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | j
+     [1192]: ADD    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | j
+     [1200]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 6                | j
+     [1208]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 880              | j
+     [1216]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1224]: ADD    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | i
+     [1232]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1240]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 780              | i
+     [1248]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 100              | 100
+     [1256]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | 100
+     [1264]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1272]: PUSH   Mode:REGISTER  Rd:R0 Rs:R0                           | i
+     [1276]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 4                | end_addr
+     [1284]: POP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [1288]: CMP    Mode:REGISTER  Rd:R1 Rs:R0                           | end_addr
+     [1292]: JL     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1316             | end_addr
+     [1300]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [1308]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1324             | end_addr
+     [1316]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | end_addr
+     [1324]: CMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 0                | end_addr
+     [1332]: JZ     Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1412             | end_addr
+     [1340]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1348]: LOAD   Mode:INDIRECT  Rd:R0 Rs:R0 Payload: 0                | i
+     [1356]: INT    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | i
+     [1364]: MOV    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 9                |  
+     [1372]: INT    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 2                |  
+     [1380]: LOAD   Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1388]: ADD    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1                | i
+     [1396]: STORE  Mode:DIRECT    Rd:R0 Rs:R0 Payload: 5                | i
+     [1404]: JMP    Mode:IMMEDIATE Rd:R0 Rs:R0 Payload: 1264             | i
+     [1412]: HALT   Mode:REGISTER  Rd:R0 Rs:R0                           | i
   --------------------------------------------------------------------------------
   DATA MEMORY (Used Non-Zero Words & Active Stack):
     [0003]: 105        'i'    (STATIC/GLOBAL)

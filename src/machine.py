@@ -137,8 +137,15 @@ class ControlUnit:
 
             # Определяем, есть ли у команды payload (смещение/константа/адрес)
             has_payload = mode in (AddressingMode.IMMEDIATE, AddressingMode.DIRECT, AddressingMode.INDIRECT)
+
+            # Получаем текстовое имя режима адресации
             mode_name = AddressingMode(mode).name
-            instr_details = f"   [{pc:04d}]: {instr_name:<6} Mode:{mode_name:<9} Rd:{reg_d:<2} Rs:{reg_s:<2}"
+
+            # Получаем текстовые имена регистров вместо сырых индексов
+            reg_d_name = Register(reg_d).name
+            reg_s_name = Register(reg_s).name
+
+            instr_details = f"   [{pc:04d}]: {instr_name:<6} Mode:{mode_name:<9} Rd:{reg_d_name:<2} Rs:{reg_s_name:<2}"
             if has_payload and pc + 8 <= len(self.dp.instruction_memory):
                 payload = struct.unpack("<I", self.dp.instruction_memory[pc + 4 : pc + 8])[0]
                 instr_details += f" Payload: {payload:<10}"
