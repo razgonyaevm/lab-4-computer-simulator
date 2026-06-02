@@ -61,7 +61,7 @@ def test_golden_scenarios(golden_file: str) -> None:
 
         # Накладываем ограничение на такты для trap_demo (чтобы слишком долго не работало)
         if "trap_demo" in golden_file:
-            cmd += ["--limit", '10000']
+            cmd += ["--limit", "10000"]
 
         # Для легких тестов включаем debug, чтобы тестить потактово
         if not is_heavy:
