@@ -57,8 +57,11 @@ def test_golden_scenarios(golden_file: str) -> None:
         heavy_tests = ["prob1", "sort_numbers", "sort_ascii", "cat", "vector_benchmark"]
 
         is_heavy = any(test_name in golden_file for test_name in heavy_tests)
-        limit_val = 5000000 if is_heavy else 10000
-        cmd = ["python", "-m", "src.machine", TEMP_BIN, "--log", TEMP_LOG, "--limit", str(limit_val)]
+        cmd = ["python", "-m", "src.machine", TEMP_BIN, "--log", TEMP_LOG]
+
+        # Накладываем ограничение на такты для trap_demo (чтобы слишком долго не работало)
+        if "trap_demo" in golden_file:
+            cmd += ["--limit", '10000']
 
         # Для легких тестов включаем debug, чтобы тестить потактово
         if not is_heavy:
